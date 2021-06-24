@@ -20,6 +20,8 @@ public class Manager {
     int port;     // this is TCP port.
     String address;
 
+    //public static final String fileAddress = "D:\\CodeProjects\\JavaProjects\\NetworkProject\\src\\managerOutput.txt";
+
     Manager() {
 
         //this.numRouters = 0;
