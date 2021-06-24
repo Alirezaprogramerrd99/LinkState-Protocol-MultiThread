@@ -1,17 +1,21 @@
+import java.util.List;
+
 public class TopologyInfo{
-    String[] routers;
+
+    private List<Router> routers;
+    final int numRouters;
     String networkInfo;
-    static int [][] networkTopology;
+    int [][] networkTopology;
 
-    TopologyInfo(String[] routers, String networkInfo){
+    TopologyInfo(int numRouters, String networkInfo){
 
-        this.routers = routers;
+        this.numRouters = numRouters;
         this.networkInfo = networkInfo;
-        TopologyInfo.networkTopology = new int[routers.length][routers.length];
+        this.networkTopology = new int[this.numRouters][this.numRouters];
 
-        for (int i = 0; i < routers.length; i++) {
-            for (int j = 0; j < routers.length; j++) {
-                TopologyInfo.networkTopology[i][j] = Integer.MAX_VALUE;
+        for (int i = 0; i < this.numRouters; i++) {
+            for (int j = 0; j < this.numRouters; j++) {
+                this.networkTopology[i][j] = Integer.MAX_VALUE;
             }
         }
 
@@ -19,9 +23,6 @@ public class TopologyInfo{
         printTopologyMatrix();
     }
 
-    public String[] getRouters() {
-        return routers;
-    }
 
     public String getNetworkInfo() {
         return networkInfo;
@@ -32,12 +33,13 @@ public class TopologyInfo{
         String [] splitTopology = this.networkInfo.split(",");
 
         for (int i = 0; i < splitTopology.length-1; i++) {
+
             int fromIndex = splitTopology[i].charAt(0) - 48;
             int toIndex = splitTopology[i].charAt(2) - 48;
             int weight = splitTopology[i].charAt(4) - 48;
 
-            TopologyInfo.networkTopology[fromIndex][toIndex] = weight;
-            TopologyInfo.networkTopology[toIndex][fromIndex] = weight;
+            this.networkTopology[fromIndex][toIndex] = weight;
+            this.networkTopology[toIndex][fromIndex] = weight;
         }
     }
 
@@ -47,12 +49,20 @@ public class TopologyInfo{
 
     public void printTopologyMatrix(){
 
-        for (int i = 0; i < TopologyInfo.networkTopology.length; i++) {
+        for (int i = 0; i < this.networkTopology.length; i++) {
 
-            for (int j = 0; j < TopologyInfo.networkTopology.length; j++) {
-                System.out.print(TopologyInfo.networkTopology[i][j] + " ");
+            for (int j = 0; j < this.networkTopology.length; j++) {
+                System.out.print(this.networkTopology[i][j] + " ");
             }
             System.out.println();
         }
+    }
+
+    public void setRouters(List<Router> routers) {
+        this.routers = routers;
+    }
+
+    public List<Router> getRouters() {
+        return routers;
     }
 }

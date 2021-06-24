@@ -13,7 +13,7 @@ import java.util.Vector;
 public class Manager {
 
     //int numRouters;
-    List<Router> routers;
+    List<Router> netNodes;
     List<TCPHandler> handlers;
     int managerId;
     static int idCounter = 0;
@@ -25,7 +25,7 @@ public class Manager {
     Manager() {
 
         //this.numRouters = 0;
-        this.routers = new ArrayList<>();
+        this.netNodes = new ArrayList<>();
         this.handlers = new Vector<>();
 
         this.managerId = idCounter++;
@@ -47,12 +47,9 @@ public class Manager {
         String[] routers = routerConifg.split(",");
         String topologyInfo = "";
 
-        int lineCounter = 0;
-
         while (myReader.hasNextLine()) {   // reading topology 's info from file.
 
             topologyInfo += myReader.nextLine();
-            lineCounter++;
 
             topologyInfo += ",";
         }
@@ -62,7 +59,7 @@ public class Manager {
         System.out.println("topologyInfo: " + topologyInfo);
         System.out.println("topologyMatrix: ");
 
-        return new TopologyInfo(routers, topologyInfo);
+        return new TopologyInfo(routers.length, topologyInfo);
 
     }
 
@@ -71,22 +68,21 @@ public class Manager {
         //File managerOut = new File(fileAddress);
         FileWriter fileWriter = new FileWriter(Synchronization.managerOutput);
 
-        for (int i = 0; i < info.routers.length; i++) {
+        for (int i = 0; i < info.numRouters; i++) {
 
-            routers.add(new Router(this.address, this.port, i));   // giving a default id to every router.
+            netNodes.add(new Router(this.address, this.port, i));   // giving a default id to every router.
 
             fileWriter.write("Created router " + i + "\n");
             fileWriter.flush();
         }
 
-        //** TODO must add some code (running threads and etc.)
-
-
+        info.setRouters(netNodes);
+        Router.netTopology = info;
     }
 
     public void startRouter(int id) {
 
-        routers.get(id).start();
+        netNodes.get(id).start();
     }
 
     public static void main(String[] args) throws IOException {
@@ -101,14 +97,14 @@ public class Manager {
         try (ServerSocket server = new ServerSocket(manager.port)) {
 
             int i = 0;
-            while (i < manager.routers.size()) {
+            while (i < manager.netNodes.size()) {
 
                 try {
 
                     manager.startRouter(i);   // start router process and wait 2 sec for every process.
 
                     Socket connection = server.accept();
-                    Thread TCPConnection = new TCPHandler(connection, manager.routers.get(i).getRouterId());  // pass connection socket between manager and current router to TCP-handler.
+                    Thread TCPConnection = new TCPHandler(connection, manager.netNodes.get(i).getRouterId());  // pass connection socket between manager and current router to TCP-handler.
                     manager.handlers.add((TCPHandler) TCPConnection);   // saving list of handlers.
                     TCPConnection.start();
 

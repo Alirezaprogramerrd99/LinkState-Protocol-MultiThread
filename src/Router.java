@@ -16,14 +16,15 @@ public class Router extends Thread {
     private final int TCPPort;
     private DataInputStream input = null;   // for TCP
     private DataOutputStream out = null;    // for TCP
-    private int routerId;
+    private final int routerId;
 
     //------------------ UDP connection info -----------------------------------------------------
     ArrayList<EdgeInfo> adjRouters;  // from current node (this) to other nodes.
     public static int UDPPortCounter = 4005;   // initial value for all routers constructed from this class.
-    private int UDPPort;
-    private DatagramSocket UDPSocket = null;
+    private final int UDPPort;
+    private final DatagramSocket UDPSocket = null;
     private String IPAddress;
+    static TopologyInfo netTopology;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -32,8 +33,14 @@ public class Router extends Thread {
         this.TCPPort = TCPPort;
         this.UDPPort = UDPPortCounter++;   // initializing the udp port number for constructed router.
         this.adjRouters = new ArrayList<>();
+
     }
-    private void updateAdjList(){
+
+    private void createConnectivityTable(){
+
+        for (int i = 0; i < netTopology.numRouters; i++) {
+            
+        }
 
     }
 
@@ -113,6 +120,7 @@ public class Router extends Thread {
                 System.out.println("creating or updating table for router " + this.routerId);
 
                 // update adj routers.
+
             }
 
 
