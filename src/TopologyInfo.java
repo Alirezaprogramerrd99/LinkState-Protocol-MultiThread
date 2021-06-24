@@ -1,17 +1,17 @@
 public class TopologyInfo{
     String[] routers;
     String networkInfo;
-    int [][] networkTopology;
+    static int [][] networkTopology;
 
     TopologyInfo(String[] routers, String networkInfo){
 
         this.routers = routers;
         this.networkInfo = networkInfo;
-        this.networkTopology = new int[routers.length][routers.length];
+        TopologyInfo.networkTopology = new int[routers.length][routers.length];
 
         for (int i = 0; i < routers.length; i++) {
             for (int j = 0; j < routers.length; j++) {
-                networkTopology[i][j] = Integer.MAX_VALUE;
+                TopologyInfo.networkTopology[i][j] = Integer.MAX_VALUE;
             }
         }
 
@@ -36,8 +36,8 @@ public class TopologyInfo{
             int toIndex = splitTopology[i].charAt(2) - 48;
             int weight = splitTopology[i].charAt(4) - 48;
 
-            this.networkTopology[fromIndex][toIndex] = weight;
-            this.networkTopology[toIndex][fromIndex] = weight;
+            TopologyInfo.networkTopology[fromIndex][toIndex] = weight;
+            TopologyInfo.networkTopology[toIndex][fromIndex] = weight;
         }
     }
 
@@ -47,10 +47,10 @@ public class TopologyInfo{
 
     public void printTopologyMatrix(){
 
-        for (int i = 0; i < this.networkTopology.length; i++) {
+        for (int i = 0; i < TopologyInfo.networkTopology.length; i++) {
 
-            for (int j = 0; j < this.networkTopology.length; j++) {
-                System.out.print(this.networkTopology[i][j] + " ");
+            for (int j = 0; j < TopologyInfo.networkTopology.length; j++) {
+                System.out.print(TopologyInfo.networkTopology[i][j] + " ");
             }
             System.out.println();
         }

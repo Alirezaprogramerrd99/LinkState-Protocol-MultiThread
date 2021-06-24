@@ -60,7 +60,7 @@ public class TCPHandler extends Thread {
     }
 
     private String createInitMsgToRouter(){
-        return (this.routerAddress + "**" + "connectivity Table router " + this.getConnectionID());
+        return (this.routerAddress + "--" + "connectivity Table router " + this.getConnectionID());
     }
 
     @Override

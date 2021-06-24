@@ -4,3 +4,5 @@ Created router 2
 Created router 3
 Starting TCP connection with router 0
 Starting TCP connection with router 1
+Starting TCP connection with router 2
+Starting TCP connection with router 3

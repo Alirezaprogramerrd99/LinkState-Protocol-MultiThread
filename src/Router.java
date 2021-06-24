@@ -31,6 +31,10 @@ public class Router extends Thread {
         this.address = address;
         this.TCPPort = TCPPort;
         this.UDPPort = UDPPortCounter++;   // initializing the udp port number for constructed router.
+        this.adjRouters = new ArrayList<>();
+    }
+    private void updateAdjList(){
+
     }
 
     private String initMsgToManager(){
@@ -92,14 +96,24 @@ public class Router extends Thread {
             this.out.flush();
 
             System.out.println("router " + this.routerId + " msg send to manager.");
-            //System.out.println(input.readUTF());
 
+            //** polling wait until sender(manager) full this buffer.
             Synchronization.pollingWait(input);
 
             //------- recv the ip address and connectivity table permission from manager(handler)
             String msgFromManager = input.readUTF();
+
+            String[] splitMsg = msgFromManager.split("--");
             System.out.println("from Handler " + routerId + ": " + msgFromManager);
-            this.IPAddress = msgFromManager;   // setting ip address of router.
+            this.IPAddress = splitMsg[0];   // setting ip address of router.
+
+
+            if (splitMsg[1].contains(("connectivity Table router " + this.routerId))){
+
+                System.out.println("creating or updating table for router " + this.routerId);
+
+                // update adj routers.
+            }
 
 
         } catch (IOException e) {
