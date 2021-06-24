@@ -40,7 +40,7 @@ public class TCPHandler extends Thread {
         }
 
         this.routerAddress = IPSub + (idCounter++);
-        System.out.println("ip for router " + this.ConnectionID + " is: "+ routerAddress);
+        //System.out.println("ip for router " + this.ConnectionID + " is: "+ routerAddress);
     }
 
     public int getConnectionID() {

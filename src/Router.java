@@ -23,6 +23,7 @@ public class Router extends Thread {
     public static int UDPPortCounter = 4005;   // initial value for all routers constructed from this class.
     private int UDPPort;
     private DatagramSocket UDPSocket = null;
+    private String IPAddress;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -94,8 +95,11 @@ public class Router extends Thread {
             //System.out.println(input.readUTF());
 
             Synchronization.pollingWait(input);
+
+            //------- recv the ip address and connectivity table permission from manager(handler)
             String msgFromManager = input.readUTF();
             System.out.println("from Handler " + routerId + ": " + msgFromManager);
+            this.IPAddress = msgFromManager;   // setting ip address of router.
 
 
         } catch (IOException e) {
