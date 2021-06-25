@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 public class Synchronization {    // for shared resource.
 
     public static File managerOutput = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\managerOutput.txt");
-    public static Semaphore mutex = new Semaphore(1);
+//    public static Semaphore mutex = new Semaphore(1);
+    public static boolean [] syncronizationVector;
 
     public static void pollingWait(DataInputStream in)  {
         try {
@@ -16,6 +17,15 @@ public class Synchronization {    // for shared resource.
         }catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public static boolean checkSyncronizationVector(){
+
+        for (boolean syncItem : syncronizationVector) {
+            if (!syncItem)
+                return false;
+        }
+        return true;
     }
 
     public static void addDelaySec(int sec){

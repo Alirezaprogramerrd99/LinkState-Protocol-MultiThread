@@ -1,8 +1,12 @@
 Router 3 started to working.
 Router 3 Connected to manager via TCP.
 
+router 3 ip address from manager: 192.0.0.3
+
 Connectivity table from manager for router 3:
 from router 3 to router 0 cost is: 6
 from router 3 to router 1 cost is: 1
 from router 3 to router 2 cost is: 2
+
+ready signal for router 3 sent to manager.
 

@@ -24,6 +24,7 @@ public class Router extends Thread {
     private String IPAddress;
     static TopologyInfo netTopology;
     private String routerFileName;
+    private final String dirAddress;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -32,7 +33,10 @@ public class Router extends Thread {
         this.TCPPort = TCPPort;
         this.UDPPort = UDPPortCounter++;   // initializing the udp port number for constructed router.
         this.adjRouters = new ArrayList<>();
+
+        //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
+        this.dirAddress = "C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\RoutersOutputFiles\\";
 
     }
 
@@ -80,6 +84,23 @@ public class Router extends Thread {
         }
     }
 
+    private void deleteFilesFromDir(File dirObj){
+
+        for (File file: dirObj.listFiles()) {
+            file.delete();
+        }
+    }
+
+    private void sendSignal(String signalMsg) throws IOException{
+        out.writeUTF(signalMsg);
+    }
+
+    private void writeToRouterFile(FileWriter writer, String msg) throws IOException{
+
+        writer.write(msg);
+        writer.flush();
+    }
+
     public int getRouterId() {
         return routerId;
     }
@@ -88,15 +109,17 @@ public class Router extends Thread {
     public void run() {   // each router (node or process) task to done in network.
 
         Synchronization.addDelaySec(1);
-        File newRouterFile = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\RoutersOutputFiles\\" + this.routerFileName);
+        File newRouterFile = new File(this.dirAddress + this.routerFileName);
+
+        File dir = new File(this.dirAddress);
+        deleteFilesFromDir(dir);
+
         String routerMsg = "";
         FileWriter fileWriter = null;
 
         try {
 
-            this.socket = new Socket(this.address, this.TCPPort);
-
-
+            this.socket = new Socket(this.address, this.TCPPort);   // connect to manager using TCP.
 
             if (newRouterFile.createNewFile() || newRouterFile.exists()) {
 
@@ -148,7 +171,9 @@ public class Router extends Thread {
             String[] splitMsg = msgFromManager.split("--");
             System.out.println("from Handler " + routerId + ": " + msgFromManager);
             this.IPAddress = splitMsg[0];   // setting ip address of router.
+            routerMsg = "router " + this.routerId + " ip address from manager: " + this.IPAddress;
 
+            writeToRouterFile(fileWriter, routerMsg + "\n\n");
 
             if (splitMsg[1].contains(("connectivity Table router " + this.routerId))) {
 
@@ -160,12 +185,32 @@ public class Router extends Thread {
 
             routerMsg = "Connectivity table from manager for router " + routerId + ":\n";
             routerMsg += showConnectivityTable();   // print connectivity table for each router according to the manager.
-            fileWriter.write(routerMsg + "\n");
-            fileWriter.flush();
 
+            writeToRouterFile(fileWriter,routerMsg + "\n");
+
+            String readySignal = "ready" + routerId;
+            sendSignal(readySignal);
+
+            routerMsg = "ready signal for router " + routerId + " sent to manager.\n";
+
+            writeToRouterFile(fileWriter,routerMsg + "\n");
+
+            Synchronization.pollingWait(input);  // wait until manager orders to continue.
+            //-------------------------------------------------------------------------------------------
+            msgFromManager = input.readUTF();
+            writeToRouterFile(fileWriter,msgFromManager + " received from manager\n");
+
+            // ---------------------- applaying the dijs
             Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
             dijkstra.algoDijkstra();    // apply dijkstra algo to router.
 
+            System.out.println("forwarding table for router " + routerId + " :");
+
+            for (int i = 0; i < dijkstra.dist.length; i++) {
+                System.out.println("src: " + routerId + " to router " + i + " cost is: " + dijkstra.dist[i]);
+            }
+
+            System.out.println();
 
         } catch (IOException e) {
             e.printStackTrace();

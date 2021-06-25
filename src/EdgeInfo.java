@@ -1,6 +1,6 @@
 import java.util.Comparator;
 
-public class EdgeInfo implements Comparable<EdgeInfo> {   // one edge between one router(node) and one of its adj routers.(represents each entry in connectivity)
+public class EdgeInfo implements Comparator<EdgeInfo> {   // one edge between one router(node) and one of its adj routers.(represents each entry in connectivity)
 
     private Router adjRouter;
     private int weight;
@@ -9,6 +9,8 @@ public class EdgeInfo implements Comparable<EdgeInfo> {   // one edge between on
         this.adjRouter = adjRouter;
         this.weight = weight;
     }
+
+    EdgeInfo(){}
 
     public Router getAdjRouter() {
         return adjRouter;
@@ -27,8 +29,18 @@ public class EdgeInfo implements Comparable<EdgeInfo> {   // one edge between on
     }
 
 
+//    @Override
+//    public int compareTo(EdgeInfo o) {
+//        return Integer.compare(this.weight, o.weight);
+//    }
+
     @Override
-    public int compareTo(EdgeInfo o) {
-        return Integer.compare(this.weight, o.weight);
+    public int compare(EdgeInfo node1, EdgeInfo node2)
+    {
+        if (node1.weight < node2.weight)
+            return -1;
+        if (node1.weight > node2.weight)
+            return 1;
+        return 0;
     }
 }

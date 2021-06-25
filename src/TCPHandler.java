@@ -63,6 +63,10 @@ public class TCPHandler extends Thread {
         return (this.routerAddress + "--" + "connectivity Table router " + this.getConnectionID());
     }
 
+    private void sendSignal(String signalMsg) throws IOException{
+        out.writeUTF(signalMsg);
+    }
+
     @Override
     public void run() {
 
@@ -72,7 +76,8 @@ public class TCPHandler extends Thread {
 
 //------------ start of TCP connection between one router and manager ----------------------------------------------
             FileWriter fileWriter = new FileWriter(Synchronization.managerOutput, true);
-            fileWriter.write("Starting TCP connection with router " + this.ConnectionID + "\n");
+            String handlerMsg = "Starting TCP connection with router ";
+            fileWriter.write(handlerMsg + this.ConnectionID + "\n");
             fileWriter.flush();
 
            //Synchronization.mutex.release();
@@ -86,6 +91,9 @@ public class TCPHandler extends Thread {
             Synchronization.pollingWait(input);    // it may cause infinite loop because the specified router closes its connection.
 
             String msgFromRouter = input.readUTF();
+            fileWriter.write("TCP request packet from router " + this.ConnectionID + ": " + "{ " + msgFromRouter + " }" +"\n");
+            fileWriter.flush();
+
             String [] initpktFromRouter = msgFromRouter.split("--");
             System.out.println("TCP Handler "+ getConnectionID() + ": " +  msgFromRouter);
 
@@ -93,6 +101,32 @@ public class TCPHandler extends Thread {
 
             out.writeUTF(createInitMsgToRouter() + "\r\n");
             out.flush();
+            handlerMsg = "connectivity table sent to router " + this.ConnectionID;
+
+            fileWriter.write(handlerMsg + "\n");
+            fileWriter.flush();
+            //-----------------------------------------------------------------------------------
+
+            Synchronization.pollingWait(input);    // wait until you receive ready signal from router.
+
+            String recvSignal = input.readUTF();
+            handlerMsg = recvSignal + " signal received from router " + this.ConnectionID;
+
+            if (recvSignal.equals("ready"+this.ConnectionID)){
+
+                Synchronization.syncronizationVector[this.ConnectionID] = true;
+            }
+
+            fileWriter.write(handlerMsg);
+            fileWriter.flush();
+
+            while (!Synchronization.checkSyncronizationVector());  // wait until all routers to be ready.
+
+            sendSignal("ok" + this.ConnectionID);
+
+            handlerMsg = "router " + this.ConnectionID + " released from waiting mode.";
+            fileWriter.write(handlerMsg);
+            fileWriter.flush();
 
             while (true);
 

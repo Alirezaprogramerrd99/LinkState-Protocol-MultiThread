@@ -22,6 +22,8 @@ public class TopologyInfo{
         createTopologyMatrix();
         printTopologyMatrix();
 
+        Synchronization.syncronizationVector = new boolean[this.numRouters];
+
         System.out.println();
     }
 
