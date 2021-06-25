@@ -1,0 +1,10 @@
+Router 0 started to working.
+router 0 Connected to manager via TCP.
+Router 0 started to working.
+router 0 Connected to manager via TCP.
+Router 0 started to working.
+router 0 Connected to manager via TCP.
+Router 0 started to working.
+router 0 Connected to manager via TCP.
+Router 0 started to working.
+router 0 Connected to manager via TCP.

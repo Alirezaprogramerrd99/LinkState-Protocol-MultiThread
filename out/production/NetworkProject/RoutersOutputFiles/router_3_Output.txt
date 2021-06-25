@@ -1,0 +1,8 @@
+Router 3 started to working.
+router 3 Connected to manager via TCP.
+Router 3 started to working.
+router 3 Connected to manager via TCP.
+Router 3 started to working.
+router 3 Connected to manager via TCP.
+Router 3 started to working.
+router 3 Connected to manager via TCP.

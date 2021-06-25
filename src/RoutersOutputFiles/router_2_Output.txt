@@ -1,0 +1,10 @@
+Router 2 started to working.
+router 2 Connected to manager via TCP.
+Router 2 started to working.
+router 2 Connected to manager via TCP.
+Router 2 started to working.
+router 2 Connected to manager via TCP.
+Router 2 started to working.
+router 2 Connected to manager via TCP.
+Router 2 started to working.
+router 2 Connected to manager via TCP.

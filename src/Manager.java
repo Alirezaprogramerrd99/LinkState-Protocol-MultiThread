@@ -56,7 +56,8 @@ public class Manager {
 
         myReader.close();
 
-        //System.out.println("topologyInfo: " + topologyInfo);
+        System.out.println("topologyInfo: " + topologyInfo);
+        System.out.println();
         System.out.println("Network topologyMatrix: ");
 
         return new TopologyInfo(routers.length, topologyInfo);

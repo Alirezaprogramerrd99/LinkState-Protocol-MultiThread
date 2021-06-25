@@ -1,7 +1,5 @@
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -25,6 +23,7 @@ public class Router extends Thread {
     private final DatagramSocket UDPSocket = null;
     private String IPAddress;
     static TopologyInfo netTopology;
+    private String routerFileName;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -33,28 +32,29 @@ public class Router extends Thread {
         this.TCPPort = TCPPort;
         this.UDPPort = UDPPortCounter++;   // initializing the udp port number for constructed router.
         this.adjRouters = new ArrayList<>();
+        this.routerFileName = "router_" + routerId + "_Output.txt";
 
     }
 
-    private void createConnectivityTable(){   //*****
+    private void createConnectivityTable() {   //*****
 
         for (int i = 0; i < netTopology.numRouters; i++) {
 
-            if (netTopology.networkTopology[this.routerId][i] > 0){
+            if (netTopology.networkTopology[this.routerId][i] > 0) {
                 adjRouters.add(new EdgeInfo(netTopology.getRouters().get(i), netTopology.networkTopology[this.routerId][i]));
             }
         }
     }
 
-    private void printConnectivityTable(){
+    private void printConnectivityTable() {
 
-        for (EdgeInfo info: adjRouters) {
-            System.out.println("from router "+ this.routerId +" to router "+ info.getAdjRouter().routerId + " w is: " + info.getWeight());
+        for (EdgeInfo info : adjRouters) {
+            System.out.println("from router " + this.routerId + " to router " + info.getAdjRouter().routerId + " w is: " + info.getWeight());
         }
         System.out.println();
     }
 
-    private String initMsgToManager(){
+    private String initMsgToManager() {
         return (this.UDPPort + "--" + "request " + routerId);
     }
 
@@ -83,12 +83,30 @@ public class Router extends Thread {
     public void run() {   // each router (node or process) task to done in network.
 
         Synchronization.addDelaySec(1);
+        File newRouterFile = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\RoutersOutputFiles\\" + this.routerFileName);
 
         try {
+
             this.socket = new Socket(this.address, this.TCPPort);
 
-            System.out.println("router " + this.routerId + " Connected to manager via TCP.");
+            FileWriter fileWriter = null;
 
+            if (newRouterFile.createNewFile() || newRouterFile.exists()) {
+
+                System.out.println("router " + this.routerId + " output file created successfully.");
+                fileWriter = new FileWriter(newRouterFile, true);
+                fileWriter.write("Router " + this.routerId + " started to working." + "\n");
+                fileWriter.flush();
+
+            } else
+                System.out.println("error to create router" + this.routerId + " output file.");
+
+
+            String routerMsg = "router " + this.routerId + " Connected to manager via TCP.";
+            System.out.println(routerMsg);
+
+            fileWriter.write(routerMsg + "\n");
+            fileWriter.flush();
             // takes input from terminal
             this.input = new DataInputStream(socket.getInputStream());
 
@@ -125,7 +143,7 @@ public class Router extends Thread {
             this.IPAddress = splitMsg[0];   // setting ip address of router.
 
 
-            if (splitMsg[1].contains(("connectivity Table router " + this.routerId))){
+            if (splitMsg[1].contains(("connectivity Table router " + this.routerId))) {
 
                 System.out.println("creating or updating table for router " + this.routerId);
                 // update adj routers.
@@ -134,6 +152,9 @@ public class Router extends Thread {
             }
 
             printConnectivityTable();    // print connectivity table for each router according to the manager.
+
+            Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
+            dijkstra.algoDijkstra();    // apply dijkstra algo to router.
 
 
         } catch (IOException e) {

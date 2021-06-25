@@ -34,7 +34,7 @@ public class TopologyInfo{
 
         String [] splitTopology = this.networkInfo.split(",");
 
-        for (int i = 0; i < splitTopology.length-1; i++) {
+        for (int i = 0; i < splitTopology.length; i++) {
 
             int fromIndex = splitTopology[i].charAt(0) - 48;
             int toIndex = splitTopology[i].charAt(2) - 48;
