@@ -1,8 +1,7 @@
 Router 2 started to working.
 router 2 Connected to manager via TCP.
-Router 2 started to working.
-router 2 Connected to manager via TCP.
-Router 2 started to working.
-router 2 Connected to manager via TCP.
-Router 2 started to working.
-router 2 Connected to manager via TCP.
+
+Connectivity table from manager for router 2:
+from router 2 to router 0 cost is: 3
+from router 2 to router 3 cost is: 2
+

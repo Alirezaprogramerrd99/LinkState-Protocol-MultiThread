@@ -1,12 +1,8 @@
 Router 0 started to working.
-router 0 Connected to manager via TCP.
-Router 0 started to working.
-router 0 Connected to manager via TCP.
-Router 0 started to working.
-router 0 Connected to manager via TCP.
-Router 0 started to working.
-router 0 Connected to manager via TCP.
-Router 0 started to working.
-router 0 Connected to manager via TCP.
-Router 0 started to working.
-router 0 Connected to manager via TCP.
+Router 0 Connected to manager via TCP.
+
+Connectivity table from manager for router 0:
+from router 0 to router 1 cost is: 1
+from router 0 to router 2 cost is: 3
+from router 0 to router 3 cost is: 6
+

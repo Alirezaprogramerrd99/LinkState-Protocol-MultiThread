@@ -46,12 +46,17 @@ public class Router extends Thread {
         }
     }
 
-    private void printConnectivityTable() {
+    private String showConnectivityTable() {
 
+        String msg = "";
         for (EdgeInfo info : adjRouters) {
-            System.out.println("from router " + this.routerId + " to router " + info.getAdjRouter().routerId + " w is: " + info.getWeight());
+
+            msg += "from router " + this.routerId + " to router " + info.getAdjRouter().routerId + " cost is: " + info.getWeight() + "\n";
+            //System.out.println(msg);
         }
-        System.out.println();
+        //System.out.println();
+
+        return msg;
     }
 
     private String initMsgToManager() {
@@ -84,17 +89,19 @@ public class Router extends Thread {
 
         Synchronization.addDelaySec(1);
         File newRouterFile = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\RoutersOutputFiles\\" + this.routerFileName);
+        String routerMsg = "";
+        FileWriter fileWriter = null;
 
         try {
 
             this.socket = new Socket(this.address, this.TCPPort);
 
-            FileWriter fileWriter = null;
+
 
             if (newRouterFile.createNewFile() || newRouterFile.exists()) {
 
                 System.out.println("router " + this.routerId + " output file created successfully.");
-                fileWriter = new FileWriter(newRouterFile, true);
+                fileWriter = new FileWriter(newRouterFile, false);
                 fileWriter.write("Router " + this.routerId + " started to working." + "\n");
                 fileWriter.flush();
 
@@ -102,10 +109,10 @@ public class Router extends Thread {
                 System.out.println("error to create router" + this.routerId + " output file.");
 
 
-            String routerMsg = "router " + this.routerId + " Connected to manager via TCP.";
+            routerMsg = "Router " + this.routerId + " Connected to manager via TCP.";
             System.out.println(routerMsg);
 
-            fileWriter.write(routerMsg + "\n");
+            fileWriter.write(routerMsg + "\n\n");
             fileWriter.flush();
             // takes input from terminal
             this.input = new DataInputStream(socket.getInputStream());
@@ -151,7 +158,10 @@ public class Router extends Thread {
 
             }
 
-            printConnectivityTable();    // print connectivity table for each router according to the manager.
+            routerMsg = "Connectivity table from manager for router " + routerId + ":\n";
+            routerMsg += showConnectivityTable();   // print connectivity table for each router according to the manager.
+            fileWriter.write(routerMsg + "\n");
+            fileWriter.flush();
 
             Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
             dijkstra.algoDijkstra();    // apply dijkstra algo to router.
