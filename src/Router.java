@@ -36,12 +36,22 @@ public class Router extends Thread {
 
     }
 
-    private void createConnectivityTable(){
+    private void createConnectivityTable(){   //*****
 
         for (int i = 0; i < netTopology.numRouters; i++) {
-            
-        }
 
+            if (netTopology.networkTopology[this.routerId][i] > 0){
+                adjRouters.add(new EdgeInfo(netTopology.getRouters().get(i), netTopology.networkTopology[this.routerId][i]));
+            }
+        }
+    }
+
+    private void printConnectivityTable(){
+
+        for (EdgeInfo info: adjRouters) {
+            System.out.println("from router "+ this.routerId +" to router "+ info.getAdjRouter().routerId + " w is: " + info.getWeight());
+        }
+        System.out.println();
     }
 
     private String initMsgToManager(){
@@ -118,10 +128,12 @@ public class Router extends Thread {
             if (splitMsg[1].contains(("connectivity Table router " + this.routerId))){
 
                 System.out.println("creating or updating table for router " + this.routerId);
-
                 // update adj routers.
+                createConnectivityTable();
 
             }
+
+            printConnectivityTable();    // print connectivity table for each router according to the manager.
 
 
         } catch (IOException e) {

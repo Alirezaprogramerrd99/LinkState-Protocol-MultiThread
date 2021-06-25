@@ -15,12 +15,14 @@ public class TopologyInfo{
 
         for (int i = 0; i < this.numRouters; i++) {
             for (int j = 0; j < this.numRouters; j++) {
-                this.networkTopology[i][j] = Integer.MAX_VALUE;
+                this.networkTopology[i][j] = 0;
             }
         }
 
         createTopologyMatrix();
         printTopologyMatrix();
+
+        System.out.println();
     }
 
 
