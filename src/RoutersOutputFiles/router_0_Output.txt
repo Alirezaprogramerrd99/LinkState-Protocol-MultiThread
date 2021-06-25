@@ -10,3 +10,11 @@ from router 0 to router 3 cost is: 6
 
 ready signal for router 0 sent to manager.
 
+ok0 received from manager
+
+SPT for router 0:
+src 0 to router 0 cost is: 0
+src 0 to router 1 cost is: 1
+src 0 to router 2 cost is: 3
+src 0 to router 3 cost is: 2
+

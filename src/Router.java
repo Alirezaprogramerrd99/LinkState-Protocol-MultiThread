@@ -195,22 +195,24 @@ public class Router extends Thread {
 
             writeToRouterFile(fileWriter,routerMsg + "\n");
 
-            Synchronization.pollingWait(input);  // wait until manager orders to continue.
+            Synchronization.pollingWait(input);       // wait until manager orders to continue.
             //-------------------------------------------------------------------------------------------
-            msgFromManager = input.readUTF();
+            msgFromManager = input.readUTF();       // ok from manager
             writeToRouterFile(fileWriter,msgFromManager + " received from manager\n");
 
-            // ---------------------- applaying the dijs
+            // ---------------------- applaying the dijkstra on router ----------------------------------------
+
+            System.out.println("dijkstra algo is applaying on router " + this.routerId);
             Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
             dijkstra.algoDijkstra();    // apply dijkstra algo to router.
 
-            System.out.println("forwarding table for router " + routerId + " :");
+            routerMsg = "\nSPT for router " + routerId + ":\n";
 
             for (int i = 0; i < dijkstra.dist.length; i++) {
-                System.out.println("src: " + routerId + " to router " + i + " cost is: " + dijkstra.dist[i]);
+                routerMsg += "src " + routerId + " to router " + i + " cost is: " + dijkstra.dist[i] + "\n";
             }
+            writeToRouterFile(fileWriter, routerMsg + "\n");
 
-            System.out.println();
 
         } catch (IOException e) {
             e.printStackTrace();

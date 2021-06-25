@@ -3,15 +3,23 @@ Created router 1
 Created router 2
 Created router 3
 Starting TCP connection with router 0
-TCP request packet from router 0: { 4005--request 0 }
+TCP request packet(UDP-port -- request#) from router 0: { 4005--request 0 }
 connectivity table sent to router 0
 ready0 signal received from router 0Starting TCP connection with router 1
-TCP request packet from router 1: { 4006--request 1 }
+TCP request packet(UDP-port -- request#) from router 1: { 4006--request 1 }
 connectivity table sent to router 1
 ready1 signal received from router 1Starting TCP connection with router 2
-TCP request packet from router 2: { 4007--request 2 }
+TCP request packet(UDP-port -- request#) from router 2: { 4007--request 2 }
 connectivity table sent to router 2
 ready2 signal received from router 2Starting TCP connection with router 3
-TCP request packet from router 3: { 4008--request 3 }
+TCP request packet(UDP-port -- request#) from router 3: { 4008--request 3 }
 connectivity table sent to router 3
 ready3 signal received from router 3
+
+router 2 released from waiting mode.
+
+router 0 released from waiting mode.
+
+router 3 released from waiting mode.
+
+router 1 released from waiting mode.

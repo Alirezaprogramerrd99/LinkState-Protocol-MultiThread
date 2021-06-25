@@ -91,7 +91,7 @@ public class TCPHandler extends Thread {
             Synchronization.pollingWait(input);    // it may cause infinite loop because the specified router closes its connection.
 
             String msgFromRouter = input.readUTF();
-            fileWriter.write("TCP request packet from router " + this.ConnectionID + ": " + "{ " + msgFromRouter + " }" +"\n");
+            fileWriter.write("TCP request packet(UDP-port -- request#) from router " + this.ConnectionID + ": " + "{ " + msgFromRouter + " }" +"\n");
             fileWriter.flush();
 
             String [] initpktFromRouter = msgFromRouter.split("--");
@@ -124,7 +124,7 @@ public class TCPHandler extends Thread {
 
             sendSignal("ok" + this.ConnectionID);
 
-            handlerMsg = "router " + this.ConnectionID + " released from waiting mode.";
+            handlerMsg = "\n\nrouter " + this.ConnectionID + " released from waiting mode.";
             fileWriter.write(handlerMsg);
             fileWriter.flush();
 

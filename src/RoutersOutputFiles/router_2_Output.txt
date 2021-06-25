@@ -9,3 +9,11 @@ from router 2 to router 3 cost is: 2
 
 ready signal for router 2 sent to manager.
 
+ok2 received from manager
+
+SPT for router 2:
+src 2 to router 0 cost is: 3
+src 2 to router 1 cost is: 3
+src 2 to router 2 cost is: 0
+src 2 to router 3 cost is: 2
+
