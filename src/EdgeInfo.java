@@ -1,4 +1,5 @@
 import java.util.Comparator;
+import java.util.Objects;
 
 public class EdgeInfo implements Comparator<EdgeInfo> {   // one edge between one router(node) and one of its adj routers.(represents each entry in connectivity)
 
@@ -11,6 +12,10 @@ public class EdgeInfo implements Comparator<EdgeInfo> {   // one edge between on
     }
 
     EdgeInfo(){}
+
+    EdgeInfo(Router router){
+        this.adjRouter = router;
+    }
 
     public Router getAdjRouter() {
         return adjRouter;
@@ -28,12 +33,6 @@ public class EdgeInfo implements Comparator<EdgeInfo> {   // one edge between on
         this.weight = weight;
     }
 
-
-//    @Override
-//    public int compareTo(EdgeInfo o) {
-//        return Integer.compare(this.weight, o.weight);
-//    }
-
     @Override
     public int compare(EdgeInfo node1, EdgeInfo node2)
     {
@@ -43,4 +42,10 @@ public class EdgeInfo implements Comparator<EdgeInfo> {   // one edge between on
             return 1;
         return 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return this.adjRouter.getRouterId() == ((Router)o).getRouterId();
+    }
+
 }

@@ -6,7 +6,6 @@ public class TopologyInfo{
     final int numRouters;
     String networkInfo;
     int [][] networkTopology;
-    String topologyMatrixString;
 
     TopologyInfo(int numRouters, String networkInfo){
 

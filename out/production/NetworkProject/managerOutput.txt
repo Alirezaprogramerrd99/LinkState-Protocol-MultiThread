@@ -23,10 +23,10 @@ TCP request packet(UDP-port -- request#) from router 3: { 4008--request 3 }
 connectivity table sent to router 3
 ready3 signal received from router 3
 
-router 1 released from waiting mode.
+router 3 released from waiting mode.
 
-router 0 released from waiting mode.
+router 1 released from waiting mode.
 
 router 2 released from waiting mode.
 
-router 3 released from waiting mode.
+router 0 released from waiting mode.

@@ -4,6 +4,9 @@ import java.net.DatagramSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -15,16 +18,18 @@ public class Router extends Thread {
     private DataInputStream input = null;   // for TCP
     private DataOutputStream out = null;    // for TCP
     private final int routerId;
+    private String routerFileName;
+    private final String dirAddress;
 
     //------------------ UDP connection info -----------------------------------------------------
     ArrayList<EdgeInfo> adjRouters;  // from current node (this) to other nodes.
+    ArrayList<Integer> adjIDs;
     public static int UDPPortCounter = 4005;   // initial value for all routers constructed from this class.
     private final int UDPPort;
     private final DatagramSocket UDPSocket = null;
     private String IPAddress;
     static TopologyInfo netTopology;
-    private String routerFileName;
-    private final String dirAddress;
+    private Map <Integer, Integer> forwardingTable;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -33,6 +38,8 @@ public class Router extends Thread {
         this.TCPPort = TCPPort;
         this.UDPPort = UDPPortCounter++;   // initializing the udp port number for constructed router.
         this.adjRouters = new ArrayList<>();
+        this.adjIDs = new ArrayList<>();
+        this.forwardingTable = new HashMap<>();
 
         //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
@@ -45,7 +52,9 @@ public class Router extends Thread {
         for (int i = 0; i < netTopology.numRouters; i++) {
 
             if (netTopology.networkTopology[this.routerId][i] > 0) {
+
                 adjRouters.add(new EdgeInfo(netTopology.getRouters().get(i), netTopology.networkTopology[this.routerId][i]));
+                adjIDs.add(netTopology.getRouters().get(i).getRouterId());
             }
         }
     }
@@ -100,6 +109,92 @@ public class Router extends Thread {
         writer.write(msg);
         writer.flush();
     }
+
+    private boolean hasMinCost(int destRouter, int [] parents){
+
+        int indexInAdjlist = adjIDs.indexOf(destRouter);
+
+        if (parents[destRouter] == this.routerId)
+            return true;
+
+        int parIndexInAdjList = adjIDs.indexOf(parents[destRouter]);
+
+        if (indexInAdjlist == -1)
+            return false;
+
+        EdgeInfo node = adjRouters.get(indexInAdjlist);
+        EdgeInfo parNode = adjRouters.get(parIndexInAdjList);
+
+//        if (routerId == 0){
+//            System.out.println("destRouter: " + destRouter);
+//            System.out.println("parents[destRouter]: " + parents[destRouter]);
+//            System.out.println("node weight: " + node.getWeight());
+//        }
+
+        if (parNode.getWeight() > node.getWeight())
+            return true;
+        else
+            return false;
+    }
+
+    private void updateForwardingTable(Dijkstra dijkstra){
+
+        for (int destRouter = 0; destRouter < netTopology.numRouters; destRouter++) {
+
+            if (routerId == 0)
+                System.out.println("in if destRouter is: " + destRouter + "   " + this.adjIDs.contains(destRouter));
+
+            if (this.adjIDs.contains(destRouter) && hasMinCost(destRouter, dijkstra.parents)){
+;
+                this.forwardingTable.put(destRouter, destRouter);
+            }
+
+            else {
+
+                int adjID = destRouter;
+
+                if (routerId == 0){
+                    System.out.println("before: " + adjID);
+                    //System.out.println("here!!");
+                }
+
+                adjID = dijkstra.parents[adjID];
+
+                if (routerId == 0){
+                    System.out.println("after: " + adjID);
+                    //System.out.println("here!!");
+                }
+
+                while (!this.adjIDs.contains(adjID)){
+
+                    if (this.routerId == destRouter) {
+
+                        adjID = -1;   // because is the same.
+                        break;
+                    }
+                    adjID = dijkstra.parents[adjID];
+
+                }
+                this.forwardingTable.put(destRouter, adjID);   // dest, link from this router.
+            }
+        }
+    }
+
+    private void showFrowardingTable(FileWriter writer) throws IOException{
+
+        String outMsg = "\nforwarding table for router " + this.routerId + ":";
+        //System.out.println(outMsg);
+        outMsg += "\n----dist--------link-----\n";
+
+        for (int dest = 0; dest < this.forwardingTable.size(); dest++) {
+
+            int link = forwardingTable.get(dest);
+            outMsg += "\t " + dest + "     |     " + "(" + this.routerId + ", " + link + ")" + "\n";
+        }
+        writer.write(outMsg);
+        writer.flush();
+    }
+
 
     public int getRouterId() {
         return routerId;
@@ -220,6 +315,11 @@ public class Router extends Thread {
 
             writeToRouterFile(fileWriter, routerMsg);
 
+
+            // --------updating forwarding table..
+
+            updateForwardingTable(dijkstra);
+            showFrowardingTable(fileWriter);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -9,7 +9,7 @@ from router 1 to router 3 cost is: 1
 
 ready signal for router 1 sent to manager.
 
-ok1 received from manager
+{ ok1 } received from manager.
 
 		<< Dijkstra algo is applying on router 1 >>
 
@@ -24,3 +24,10 @@ parent of router 0 is 1
 parent of router 1 is 0
 parent of router 2 is 3
 parent of router 3 is 1
+
+forwarding table for router 1:
+----dist--------link-----
+	 0     |     (1, 0)
+	 1     |     (1, -1)
+	 2     |     (1, 3)
+	 3     |     (1, 3)
