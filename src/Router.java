@@ -198,20 +198,27 @@ public class Router extends Thread {
             Synchronization.pollingWait(input);       // wait until manager orders to continue.
             //-------------------------------------------------------------------------------------------
             msgFromManager = input.readUTF();       // ok from manager
-            writeToRouterFile(fileWriter,msgFromManager + " received from manager\n");
+            writeToRouterFile(fileWriter,"{ "+ msgFromManager+ " } " + "received from manager.\n");
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------
 
             System.out.println("dijkstra algo is applaying on router " + this.routerId);
             Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
-            dijkstra.algoDijkstra();    // apply dijkstra algo to router.
+            dijkstra.algoDijkstra();    //** apply dijkstra algo to router.
 
-            routerMsg = "\nSPT for router " + routerId + ":\n";
+            routerMsg = "\n\t\t<< Dijkstra algo is applying on router " + this.routerId + " >>\n";
+            routerMsg += "\nSPT for router " + routerId + ":\n";
 
             for (int i = 0; i < dijkstra.dist.length; i++) {
                 routerMsg += "src " + routerId + " to router " + i + " cost is: " + dijkstra.dist[i] + "\n";
             }
             writeToRouterFile(fileWriter, routerMsg + "\n");
+            routerMsg = "predecessor paths in router " + this.routerId + ": \n";
+
+            for (int i = 0; i < dijkstra.parents.length; i++)
+                routerMsg += "parent of router " + i +  " is " + dijkstra.parents[i] + "\n";
+
+            writeToRouterFile(fileWriter, routerMsg);
 
 
         } catch (IOException e) {

@@ -10,7 +10,9 @@ from router 3 to router 2 cost is: 2
 
 ready signal for router 3 sent to manager.
 
-ok3 received from manager
+{ ok3 } received from manager
+
+		<< Dijkstra algo is applying on router 3 >>
 
 SPT for router 3:
 src 3 to router 0 cost is: 2
@@ -18,3 +20,8 @@ src 3 to router 1 cost is: 1
 src 3 to router 2 cost is: 2
 src 3 to router 3 cost is: 0
 
+predecessor paths in router 3: 
+parent of router 0 is 1
+parent of router 1 is 3
+parent of router 2 is 3
+parent of router 3 is 0

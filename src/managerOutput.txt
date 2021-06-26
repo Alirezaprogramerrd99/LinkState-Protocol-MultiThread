@@ -2,6 +2,13 @@ Created router 0
 Created router 1
 Created router 2
 Created router 3
+
+Network topology created by manager:
+0 1 3 6 
+1 0 0 1 
+3 0 0 2 
+6 1 2 0 
+
 Starting TCP connection with router 0
 TCP request packet(UDP-port -- request#) from router 0: { 4005--request 0 }
 connectivity table sent to router 0
@@ -14,12 +21,12 @@ connectivity table sent to router 2
 ready2 signal received from router 2Starting TCP connection with router 3
 TCP request packet(UDP-port -- request#) from router 3: { 4008--request 3 }
 connectivity table sent to router 3
-ready3 signal received from router 3
 
-router 2 released from waiting mode.
+
+router 1 released from waiting mode.
+
+router 2 released from waiting mode.ready3 signal received from router 3
 
 router 0 released from waiting mode.
 
 router 3 released from waiting mode.
-
-router 1 released from waiting mode.

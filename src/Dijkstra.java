@@ -11,6 +11,7 @@ public class Dijkstra {    // we will run this for each router.
     int []dist;
     Router srcRouter;
     int routersInNetwork;
+    int [] parents;
 //    List<EdgeInfo> routerAdjList;
 
     Dijkstra(Router srcRouter, List<EdgeInfo> routerAdjList){
@@ -21,12 +22,12 @@ public class Dijkstra {    // we will run this for each router.
         this.srcRouter = srcRouter;
         this.routersInNetwork = Router.UDPPortCounter - 4005;
         dist = new int[routersInNetwork];
+        parents = new int [routersInNetwork];
         this.pq = new PriorityQueue<EdgeInfo>(routersInNetwork, new EdgeInfo());
     }
 
     public void algoDijkstra()
     {
-        int c = 0;
 
         for (int i = 0; i < routersInNetwork; i++)
             dist[i] = Integer.MAX_VALUE;
@@ -41,23 +42,11 @@ public class Dijkstra {    // we will run this for each router.
 
             //when the priority queue is empty, return
 
-            if (pq.isEmpty()) {
-                //System.out.println("counter: " + c);
+            if (pq.isEmpty())
                 return;
-            }
-
-//            if (srcRouter.getRouterId() == 0) {
-//
-//                System.out.println("routers in queue:");
-//                for (EdgeInfo r : pq) {
-//                    System.out.println(r.getAdjRouter().getRouterId());
-//                }
-//            }
 
             // u is removed from PriorityQueue and has min distance
             Router u = pq.remove().getAdjRouter();
-
-            c++;
             // add node to finalized list (visited)
             visited.add(u.getRouterId());
             graph_adjacentNodes(u);
@@ -82,20 +71,11 @@ public class Dijkstra {    // we will run this for each router.
                 edgeDistance = v.getWeight();
                 newDistance = dist[u.getRouterId()] + edgeDistance;
 
-//                if (srcRouter.getRouterId() == 0){
-//
-//                    System.out.println("dist[v.getAdjRouter().getRouterId()] = " + dist[v.getAdjRouter().getRouterId()]);
-//                    System.out.println("dist[u.getRouterId()] = " + dist[u.getRouterId()]);
-//                    System.out.println("router id: " + v.getAdjRouter().getRouterId());
-//                    System.out.println("newDistance is " + newDistance);
-//                    System.out.println("edgeDistance is " + edgeDistance);
-//                }
-
                 // compare distances
                 if (newDistance < dist[v.getAdjRouter().getRouterId()]) {
 
                     dist[v.getAdjRouter().getRouterId()] = newDistance;
-
+                    parents[v.getAdjRouter().getRouterId()] = u.getRouterId();
                 }
 
                 // Add the current vertex to the PriorityQueue

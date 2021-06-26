@@ -61,6 +61,17 @@ public class Manager {
 
     }
 
+    private void writeNetTopologyInFile(FileWriter fileWriter, TopologyInfo info) throws IOException{
+
+        for (int i = 0; i < info.numRouters; i++) {
+            for (int j = 0; j < info.numRouters; j++)
+                fileWriter.write(info.networkTopology[i][j] + " ");
+            fileWriter.write("\n");
+        }
+        fileWriter.write("\n");
+        fileWriter.flush();
+    }
+
     public void createRouters(TopologyInfo info) throws IOException {
 
         //File managerOut = new File(fileAddress);
@@ -73,6 +84,10 @@ public class Manager {
             fileWriter.write("Created router " + i + "\n");
             fileWriter.flush();
         }
+
+        fileWriter.write("\nNetwork topology created by manager:\n");
+        fileWriter.flush();
+        writeNetTopologyInFile(fileWriter, info);
 
         info.setRouters(netNodes);
         Router.netTopology = info;
