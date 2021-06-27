@@ -132,11 +132,25 @@ public class TCPHandler extends Thread {
             fileWriter.write(handlerMsg);
             fileWriter.flush();
 
+            // reset syncronization-Vector..
+            Synchronization.syncronizationVector[this.ConnectionID] = false;
+
 
             Synchronization.pollingWait(input);   // wait until router says that all if its routres sent ACK...
 
             msgFromRouter = input.readUTF();
             fileWriter.write("\nreceived from router "+ +this.ConnectionID + ": " + "{ "  + msgFromRouter + " }" + " \n");
+            fileWriter.flush();
+
+            if (msgFromRouter.equals("router " + this.ConnectionID + " is ready for routing.")){
+                Synchronization.syncronizationVector[this.ConnectionID] = true;
+            }
+
+            while (!Synchronization.checkSyncronizationVector());
+
+            sendSignal("Network is ready to route.");
+
+            fileWriter.write("\nNetwork ready to use routing signal sent to routers.\n");
             fileWriter.flush();
 
 

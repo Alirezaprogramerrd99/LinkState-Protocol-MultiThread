@@ -25,7 +25,7 @@ public class Router extends Thread {
     private DatagramSocket UDPSocket = null;
     private String IPAddress;
     static TopologyInfo netTopology;
-    private Map <Integer, Integer> forwardingTable;
+    private Map<Integer, Integer> forwardingTable;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -57,7 +57,7 @@ public class Router extends Thread {
 
     private void connectToAdjacentRouters(FileWriter writer) throws IOException {   // this method connects routers using UDP ports.
 
-        String msg = "\nConnecting router "+ this.routerId +" to Adjacent routers via UDP.\n";
+        String msg = "\nConnecting router " + this.routerId + " to Adjacent routers via UDP.\n";
 
         for (EdgeInfo router : adjRouters) {
             msg += "router " + this.routerId + " connected to router " + router.getAdjRouter().routerId + " via UDP.\n";
@@ -73,37 +73,52 @@ public class Router extends Thread {
         this.UDPSocket = new DatagramSocket(this.UDPPort);
     }
 
-    private String encapsulatePacket(String payload, boolean isControllPkt){
+    private String encapsulatePacket(String payload, boolean isControllPkt, boolean isLSP) {
 
         String[] splitStr = payload.split("--");   // spliting dest and payload of packet.
 
         if (isControllPkt)
             return "src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress
-                    + "--" + "payload: " + splitStr[0] + "--"+ splitStr[1];
+                    + "--" + "payload: " + splitStr[0] + "--" + splitStr[1];
 
-        else return "";   //** TODO
+        else {
+
+            if (isLSP) {   // creating LSP packet..
+                String newLSPPacket = "LSP packet--src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress + "--adjacent routers info: \n[ ";
+
+                for (EdgeInfo node : adjRouters) {
+                    newLSPPacket += "to router " + node.getAdjRouter().routerId + " with IP-address: "+ node.getAdjRouter().IPAddress + " cost is: " + node.getWeight();
+                    newLSPPacket += "\n";
+                }
+
+                return newLSPPacket;
+            } else {    //*** TODO for data packets...
+                return "";
+
+            }
+        }
     }
 
-    private DatagramPacket createUDPPacket(String payload, int UDPPort) throws IOException{
+    private DatagramPacket createUDPPacket(String payload, int UDPPort) throws IOException {
 
-        byte [] pktBuffer = payload.getBytes();
+        byte[] pktBuffer = payload.getBytes();
         return new DatagramPacket(pktBuffer, pktBuffer.length, InetAddress.getLocalHost(), UDPPort);
     }
 
-    private void sendUDPPacket(DatagramPacket packet, FileWriter writer) throws IOException{
+    private void sendUDPPacket(DatagramPacket packet, FileWriter writer) throws IOException {
 
         String pktData = new String(packet.getData(), StandardCharsets.UTF_8);
 
         writer.write("\nnew packet created from router " + this.routerId + " with payload of " + "{ " + pktData
-                +" }" +" sent to port " + packet.getPort() + "\n");
+                + " }" + " sent to port " + packet.getPort() + "\n");
 
         writer.flush();
         UDPSocket.send(packet);
     }
 
-    private void receiveUDPPacket(FileWriter writer) throws IOException{
+    private void receiveUDPPacket(FileWriter writer) throws IOException {
 
-        byte [] recvBuffer = new byte[400];
+        byte[] recvBuffer = new byte[1000];
 
         DatagramPacket DpReceive = new DatagramPacket(recvBuffer, recvBuffer.length);
         this.UDPSocket.receive(DpReceive);
@@ -117,11 +132,12 @@ public class Router extends Thread {
 
     // we must write function that sends special req packets to adj routers.
 
-    private void sendReqToAdjRouters(FileWriter writer) throws IOException{
+    private void sendReqToAdjRouters(FileWriter writer) throws IOException {
 
-        for (EdgeInfo node: this.adjRouters) {
+        for (EdgeInfo node : this.adjRouters) {
 
-            String newReq = encapsulatePacket("Req" + this.routerId +"--" +"dest: " + node.getAdjRouter().IPAddress,  true);
+
+            String newReq = encapsulatePacket("Req" + this.routerId + "--" + "dest: " + node.getAdjRouter().IPAddress, true, false);
 
             DatagramPacket packet = createUDPPacket(newReq, node.getAdjRouter().UDPPort);
 
@@ -129,13 +145,28 @@ public class Router extends Thread {
 
             receiveUDPPacket(writer);  // waiting until other req packets receive from adj routers.
 
-            String newAck = encapsulatePacket("Ack" + this.routerId + "--"+ "dest: " + node.getAdjRouter().IPAddress,  true);
+            String newAck = encapsulatePacket("Ack" + this.routerId + "--" + "dest: " + node.getAdjRouter().IPAddress, true, false);
 
             DatagramPacket ackPacket = createUDPPacket(newAck, node.getAdjRouter().UDPPort);
             sendUDPPacket(ackPacket, writer);
 
-            receiveUDPPacket(writer);   // wating for ack.
+            receiveUDPPacket(writer);   // waiting for ack from adj routers...
 
+
+        }
+    }
+
+    private void sendPacketLSPPacket(FileWriter writer) throws IOException {
+
+        for (EdgeInfo node : this.adjRouters) {
+
+            String newLSPPkt = encapsulatePacket("router " + this.routerId + " is broadcasting LSP." + "--" + "dest: " + node.getAdjRouter().IPAddress, false, true);
+
+            DatagramPacket packet = createUDPPacket(newLSPPkt, node.getAdjRouter().UDPPort);
+
+            sendUDPPacket(packet, writer);
+
+            receiveUDPPacket(writer);  // waiting until other LSP packets receive from adj routers.
         }
     }
 
@@ -172,24 +203,24 @@ public class Router extends Thread {
         }
     }
 
-    private void deleteFilesFromDir(File dirObj){
+    private void deleteFilesFromDir(File dirObj) {
 
-        for (File file: dirObj.listFiles()) {
+        for (File file : dirObj.listFiles()) {
             file.delete();
         }
     }
 
-    private void sendSignal(String signalMsg) throws IOException{
+    private void sendSignal(String signalMsg) throws IOException {
         out.writeUTF(signalMsg);
     }
 
-    private void writeToRouterFile(FileWriter writer, String msg) throws IOException{
+    private void writeToRouterFile(FileWriter writer, String msg) throws IOException {
 
         writer.write(msg);
         writer.flush();
     }
 
-    private boolean hasMinCost(int destRouter, int [] parents){
+    private boolean hasMinCost(int destRouter, int[] parents) {
 
         int indexInAdjlist = adjIDs.indexOf(destRouter);
 
@@ -207,15 +238,13 @@ public class Router extends Thread {
         return parNode.getWeight() > node.getWeight();
     }
 
-    private void updateForwardingTable(Dijkstra dijkstra){
+    private void updateForwardingTable(Dijkstra dijkstra) {
 
         for (int destRouter = 0; destRouter < netTopology.numRouters; destRouter++) {
 
-            if (this.adjIDs.contains(destRouter) && hasMinCost(destRouter, dijkstra.parents)){
+            if (this.adjIDs.contains(destRouter) && hasMinCost(destRouter, dijkstra.parents)) {
                 this.forwardingTable.put(destRouter, destRouter);
-            }
-
-            else {
+            } else {
 
                 int adjID = destRouter;
 
@@ -224,7 +253,7 @@ public class Router extends Thread {
                 if (this.routerId == destRouter)
                     adjID = -1;
 
-                while (!this.adjIDs.contains(adjID)){
+                while (!this.adjIDs.contains(adjID)) {
 
                     if (this.routerId == destRouter)
                         break;
@@ -237,7 +266,7 @@ public class Router extends Thread {
         }
     }
 
-    private void showFrowardingTable(FileWriter writer) throws IOException{
+    private void showFrowardingTable(FileWriter writer) throws IOException {
 
         String outMsg = "\nforwarding table for router " + this.routerId + ":";
         //System.out.println(outMsg);
@@ -338,19 +367,19 @@ public class Router extends Thread {
             routerMsg = "Connectivity table from manager for router " + routerId + ":\n";
             routerMsg += showConnectivityTable();   // print connectivity table for each router according to the manager.
 
-            writeToRouterFile(fileWriter,routerMsg + "\n");
+            writeToRouterFile(fileWriter, routerMsg + "\n");
 
             String readySignal = "ready" + routerId;
             sendSignal(readySignal);
 
             routerMsg = "ready signal for router " + routerId + " sent to manager.\n";
 
-            writeToRouterFile(fileWriter,routerMsg + "\n");
+            writeToRouterFile(fileWriter, routerMsg + "\n");
 
             Synchronization.pollingWait(input);       // wait until manager orders to continue.
             //-------------------------------------------------------------------------------------------
             msgFromManager = input.readUTF();       // ok from manager
-            writeToRouterFile(fileWriter,"{ "+ msgFromManager+ " } " + "received from manager.\n");   //recv safe massage for router from manager.
+            writeToRouterFile(fileWriter, "{ " + msgFromManager + " } " + "received from manager.\n");   //recv safe massage for router from manager.
 
             /* send request to other routers.*/
 
@@ -361,13 +390,22 @@ public class Router extends Thread {
 
             // send ready for routing signal to manager.
 
-            routerMsg = "\n"+"Ack received from all of adjacent of router " + this.routerId + "\n";
+            routerMsg = "\n" + "Ack received from all of adjacent of router " + this.routerId + "\n";
             routerMsg += "Sending ready for routing signal to manager...\n";
 
             writeToRouterFile(fileWriter, routerMsg);
 
             sendSignal("router " + this.routerId + " is ready for routing.");
 
+            Synchronization.pollingWait(input);    // wait until manager says all the routers are ready.
+
+            writeToRouterFile(fileWriter, "\n{ " + input.readUTF() + "} received from manager.\n");
+            writeToRouterFile(fileWriter, "\nsending LSP to routers...\n");
+
+            sendPacketLSPPacket(fileWriter);
+
+            System.out.println("limited boardCast ended in router " + this.routerId);
+            writeToRouterFile(fileWriter, "\nlimited boardCast ended in router " + this.routerId + "\n");
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------
 
@@ -385,7 +423,7 @@ public class Router extends Thread {
             routerMsg = "predecessor paths in router " + this.routerId + ": \n";
 
             for (int i = 0; i < dijkstra.parents.length; i++)
-                routerMsg += "parent of router " + i +  " is " + dijkstra.parents[i] + "\n";
+                routerMsg += "parent of router " + i + " is " + dijkstra.parents[i] + "\n";
 
             writeToRouterFile(fileWriter, routerMsg);
 

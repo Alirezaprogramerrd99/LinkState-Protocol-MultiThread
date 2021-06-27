@@ -36,6 +36,34 @@ new pkt received for router 2 is { src: router 3--IP-address: 192.0.0.3--payload
 Ack received from all of adjacent of router 2
 Sending ready for routing signal to manager...
 
+{ Network is ready to route.} received from manager.
+
+sending LSP to routers...
+
+new packet created from router 2 with payload of { LSP packet--src: router 2--IP-address: 192.0.0.2--adjacent routers info: 
+[ to router 0 with IP-address: 192.0.0.0 cost is: 3
+to router 3 with IP-address: 192.0.0.3 cost is: 2
+ } sent to port 4005
+
+new pkt received for router 2 is { LSP packet--src: router 0--IP-address: 192.0.0.0--adjacent routers info: 
+[ to router 1 with IP-address: 192.0.0.1 cost is: 1
+to router 2 with IP-address: 192.0.0.2 cost is: 3
+to router 3 with IP-address: 192.0.0.3 cost is: 6
+ }
+
+new packet created from router 2 with payload of { LSP packet--src: router 2--IP-address: 192.0.0.2--adjacent routers info: 
+[ to router 0 with IP-address: 192.0.0.0 cost is: 3
+to router 3 with IP-address: 192.0.0.3 cost is: 2
+ } sent to port 4008
+
+new pkt received for router 2 is { LSP packet--src: router 3--IP-address: 192.0.0.3--adjacent routers info: 
+[ to router 0 with IP-address: 192.0.0.0 cost is: 6
+to router 1 with IP-address: 192.0.0.1 cost is: 1
+to router 2 with IP-address: 192.0.0.2 cost is: 2
+ }
+
+limited boardCast ended in router 2
+
 		<< Dijkstra algo is applying on router 2 >>
 
 SPT for router 2:
