@@ -90,6 +90,7 @@ public class Router extends Thread {
                     newLSPPacket += "to router " + node.getAdjRouter().routerId + " with IP-address: "+ node.getAdjRouter().IPAddress + " cost is: " + node.getWeight();
                     newLSPPacket += "\n";
                 }
+                newLSPPacket += "] "+ "--payload: "+ splitStr[0] + "--" +splitStr[1] +"\n";
 
                 return newLSPPacket;
             } else {    //*** TODO for data packets...
@@ -432,6 +433,10 @@ public class Router extends Thread {
 
             updateForwardingTable(dijkstra);
             showFrowardingTable(fileWriter);
+
+            //---- now we can use forwarding table to route data packets.
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
