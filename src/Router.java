@@ -1,10 +1,8 @@
 
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -24,7 +22,7 @@ public class Router extends Thread {
     ArrayList<Integer> adjIDs;
     public static int UDPPortCounter = 4005;   // initial value for all routers constructed from this class.
     private final int UDPPort;
-    private final ArrayList<DatagramSocket> UDPSockets;
+    private DatagramSocket UDPSocket = null;
     private String IPAddress;
     static TopologyInfo netTopology;
     private Map <Integer, Integer> forwardingTable;
@@ -38,7 +36,6 @@ public class Router extends Thread {
         this.adjRouters = new ArrayList<>();
         this.adjIDs = new ArrayList<>();
         this.forwardingTable = new HashMap<>();
-        this.UDPSockets = new ArrayList<>();
 
         //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
@@ -63,12 +60,73 @@ public class Router extends Thread {
         String msg = "\nConnecting router "+ this.routerId +" to Adjacent routers via UDP.\n";
 
         for (EdgeInfo router : adjRouters) {
-            UDPSockets.add(new DatagramSocket(router.getAdjRouter().UDPPort));
-            msg += "router " + this.routerId + " connected to router " + router.getAdjRouter().routerId + "via UDP.\n";
+            msg += "router " + this.routerId + " connected to router " + router.getAdjRouter().routerId + " via UDP.\n";
         }
         writer.write(msg);
         writer.flush();
     }
+
+    //-------------------------------------- UDP functions ----------------------------------------------------------------
+    private void createUDPSocket(FileWriter writer) throws IOException {   // creating UDP socket for router
+        writer.write("\ncreated UDP socket for router " + this.routerId + "\n");
+        writer.flush();
+        this.UDPSocket = new DatagramSocket(this.UDPPort);
+    }
+
+    private String encapsulatePacket(String payload){
+        return "router " + this.routerId + "--" + "IP: " + this.IPAddress + "--" + "path taken: kk " + "payload: " + payload;
+    }
+
+    private DatagramPacket createUDPPacket(String payload, int UDPPort) throws IOException{
+
+        byte [] pktBuffer = payload.getBytes();
+        return new DatagramPacket(pktBuffer, pktBuffer.length, InetAddress.getLocalHost(), UDPPort);
+    }
+
+    private void sendUDPPacket(DatagramPacket packet, FileWriter writer) throws IOException{
+
+        String pktData = new String(packet.getData(), StandardCharsets.UTF_8);
+
+        writer.write("\nnew packet from router " + this.routerId + " with payload of " + "{ " + pktData
+                +" }" +" sent to port " + packet.getPort() + "\n");
+
+        writer.flush();
+        UDPSocket.send(packet);
+    }
+
+    private void receiveUDPPacket(FileWriter writer) throws IOException{
+
+        String msg;
+        byte [] recvBuffer = new byte[400];
+
+
+        DatagramPacket DpReceive = new DatagramPacket(recvBuffer, recvBuffer.length);
+        this.UDPSocket.receive(DpReceive);
+
+        String pktRecv = new String(recvBuffer, StandardCharsets.UTF_8);
+        pktRecv = pktRecv.replace("\0", "");
+
+        writer.write("\nnew pkt received for router " + this.routerId + " is " + "{ " + pktRecv + " }" + "\n");
+        writer.flush();
+    }
+
+    // we must write function that sends special req packets to routers.
+
+    public static StringBuilder pktData(byte[] a)
+    {
+        if (a == null)
+            return null;
+        StringBuilder ret = new StringBuilder();
+        int i = 0;
+        while (a[i] != 0)
+        {
+            ret.append((char) a[i]);
+            i++;
+        }
+        return ret;
+    }
+
+    //----------------------------------------------------------------------------------------------------------
 
     private String showConnectivityTable() {
 
@@ -76,10 +134,7 @@ public class Router extends Thread {
         for (EdgeInfo info : adjRouters) {
 
             msg += "from router " + this.routerId + " to router " + info.getAdjRouter().routerId + " cost is: " + info.getWeight() + "\n";
-            //System.out.println(msg);
         }
-        //System.out.println();
-
         return msg;
     }
 
@@ -286,7 +341,20 @@ public class Router extends Thread {
 
             /* send request to other routers.*/
 
-            //connectToAdjacentRouters(fileWriter);
+            createUDPSocket(fileWriter);
+            connectToAdjacentRouters(fileWriter);
+            String newPkt = encapsulatePacket("req 0");
+
+            int udp;
+            if (this.routerId == 0)
+                udp = 4006;
+            else
+                udp = 4005;
+            DatagramPacket packet = createUDPPacket(newPkt, udp);
+
+            sendUDPPacket(packet, fileWriter);
+
+            receiveUDPPacket(fileWriter);
 
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------

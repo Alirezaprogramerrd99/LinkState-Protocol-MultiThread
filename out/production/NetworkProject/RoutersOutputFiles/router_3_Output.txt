@@ -11,3 +11,12 @@ from router 3 to router 2 cost is: 2
 ready signal for router 3 sent to manager.
 
 { Safe 3 } received from manager.
+
+created UDP socket for router 3
+
+Connecting router 3 to Adjacent routers via UDP.
+router 3 connected to router 0 via UDP.
+router 3 connected to router 1 via UDP.
+router 3 connected to router 2 via UDP.
+
+new packet from router 3 with payload of { router 3--IP: 192.0.0.3--path taken: kk payload: req 0 } sent to port 4005

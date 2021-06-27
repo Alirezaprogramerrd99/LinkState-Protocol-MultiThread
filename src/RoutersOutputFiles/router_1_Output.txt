@@ -11,6 +11,16 @@ ready signal for router 1 sent to manager.
 
 { Safe 1 } received from manager.
 
+created UDP socket for router 1
+
+Connecting router 1 to Adjacent routers via UDP.
+router 1 connected to router 0 via UDP.
+router 1 connected to router 3 via UDP.
+
+new packet from router 1 with payload of { router 1--IP: 192.0.0.1--path taken: kk payload: req 0 } sent to port 4005
+
+new pkt received for router 1 is { router 0--IP: 192.0.0.0--path taken: kk payload: req 0 }
+
 		<< Dijkstra algo is applying on router 1 >>
 
 SPT for router 1:

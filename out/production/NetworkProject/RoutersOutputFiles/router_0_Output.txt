@@ -11,3 +11,35 @@ from router 0 to router 3 cost is: 6
 ready signal for router 0 sent to manager.
 
 { Safe 0 } received from manager.
+
+created UDP socket for router 0
+
+Connecting router 0 to Adjacent routers via UDP.
+router 0 connected to router 1 via UDP.
+router 0 connected to router 2 via UDP.
+router 0 connected to router 3 via UDP.
+
+new packet from router 0 with payload of { router 0--IP: 192.0.0.0--path taken: kk payload: req 0 } sent to port 4006
+
+new pkt for router 0 is { router 2--IP: 192.0.0.2--path taken: kk payload: req 0 }
+
+		<< Dijkstra algo is applying on router 0 >>
+
+SPT for router 0:
+src 0 to router 0 cost is: 0
+src 0 to router 1 cost is: 1
+src 0 to router 2 cost is: 3
+src 0 to router 3 cost is: 2
+
+predecessor paths in router 0: 
+parent of router 0 is 0
+parent of router 1 is 0
+parent of router 2 is 0
+parent of router 3 is 1
+
+forwarding table for router 0:
+----dist--------link-----
+	 0     |     (0, -1)
+	 1     |     (0, 1)
+	 2     |     (0, 2)
+	 3     |     (0, 1)
