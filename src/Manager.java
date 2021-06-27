@@ -134,7 +134,6 @@ public class Manager {
                     manager.handlers.add(TCPConnection);   // saving list of handlers.
                     TCPConnection.start();
 
-
                 } catch (IOException ex) {
 
                     ex.printStackTrace();

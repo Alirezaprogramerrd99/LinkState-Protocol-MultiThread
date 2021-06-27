@@ -442,8 +442,10 @@ public class Router extends Thread implements Comparable<Router> {
 
             writeToRouterFile(fileWriter, "\nfrom manager: " + "{ " + input.readUTF() +" }\n");
 
+            // threads that have empty routerTestPaths will pass this loop.
             while (!this.routerTestPaths.isEmpty()){   // wait until all of this router packets send to network.
-
+                System.out.println("router " + this.routerId);
+                Synchronization.addDelaySec(1);
             }
 
 

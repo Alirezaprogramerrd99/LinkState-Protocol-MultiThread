@@ -167,18 +167,18 @@ public class TCPHandler extends Thread {
 
           //  this.managerSleepTime = TopologyInfo.testPathQueue.size();
 
-            while (!TopologyInfo.testPathQueue.isEmpty()) {
+            Synchronization.mutex.acquire();
+
+            while (!TopologyInfo.testPathQueue.isEmpty()) {    // one random thread will execute this block of code.
 
                 PathInfo newPath = TopologyInfo.testPathQueue.remove();
 
-                System.out.println("in thread " + this.ConnectionID + " newPath src is: " + newPath.getSrc() + " queue size: " + TopologyInfo.testPathQueue.size());
-
+                //System.out.println("in thread " + this.ConnectionID + " newPath src is: " + newPath.getSrc() + " queue size: " + TopologyInfo.testPathQueue.size());
                 manager.netNodes.get(newPath.getSrc()).routerTestPaths.add(newPath);
                 Synchronization.addDelaySec(1);
-
             }
 
-//            System.out.println("out thread " + this.ConnectionID);
+            Synchronization.mutex.release();
 
             fileWriter.write("\nTest routes sent to router " + this.ConnectionID + "\n");
             fileWriter.flush();
@@ -192,7 +192,6 @@ public class TCPHandler extends Thread {
 //            fileWriter.flush();
 
             while (true);
-
 
         } catch (Exception ex) {
             System.err.println(ex);

@@ -21,15 +21,15 @@ router 0 connected to router 3 via UDP.
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Req2--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: Req1--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Req2--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.2 } sent to port 4007
 
-new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: Req1--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.2 } sent to port 4007
 
@@ -57,10 +57,10 @@ to router 3 with IP-address: 192.0.0.3 cost is: 6
 ] --payload: router 0 is broadcasting LSP.--dest: 192.0.0.1
  } sent to port 4006
 
-new pkt received for router 0 is { LSP packet--src: router 2--IP-address: 192.0.0.2--adjacent routers info: 
-[ to router 0 with IP-address: 192.0.0.0 cost is: 3
-to router 3 with IP-address: 192.0.0.3 cost is: 2
-] --payload: router 2 is broadcasting LSP.--dest: 192.0.0.0
+new pkt received for router 0 is { LSP packet--src: router 1--IP-address: 192.0.0.1--adjacent routers info: 
+[ to router 0 with IP-address: 192.0.0.0 cost is: 1
+to router 3 with IP-address: 192.0.0.3 cost is: 1
+] --payload: router 1 is broadcasting LSP.--dest: 192.0.0.0
  }
 
 new packet created from router 0 with payload of { LSP packet--src: router 0--IP-address: 192.0.0.0--adjacent routers info: 
@@ -70,10 +70,10 @@ to router 3 with IP-address: 192.0.0.3 cost is: 6
 ] --payload: router 0 is broadcasting LSP.--dest: 192.0.0.2
  } sent to port 4007
 
-new pkt received for router 0 is { LSP packet--src: router 1--IP-address: 192.0.0.1--adjacent routers info: 
-[ to router 0 with IP-address: 192.0.0.0 cost is: 1
-to router 3 with IP-address: 192.0.0.3 cost is: 1
-] --payload: router 1 is broadcasting LSP.--dest: 192.0.0.0
+new pkt received for router 0 is { LSP packet--src: router 2--IP-address: 192.0.0.2--adjacent routers info: 
+[ to router 0 with IP-address: 192.0.0.0 cost is: 3
+to router 3 with IP-address: 192.0.0.3 cost is: 2
+] --payload: router 2 is broadcasting LSP.--dest: 192.0.0.0
  }
 
 new packet created from router 0 with payload of { LSP packet--src: router 0--IP-address: 192.0.0.0--adjacent routers info: 
