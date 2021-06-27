@@ -110,21 +110,25 @@ public class TCPHandler extends Thread {
             Synchronization.pollingWait(input);    // wait until you receive ready signal from router.
 
             String recvSignal = input.readUTF();
-            handlerMsg = recvSignal + " signal received from router " + this.ConnectionID;
+            handlerMsg = "{ "+ recvSignal + " }" + " signal received from router " + this.ConnectionID + "\n";
 
             if (recvSignal.equals("ready"+this.ConnectionID)){
 
                 Synchronization.syncronizationVector[this.ConnectionID] = true;
             }
 
-            fileWriter.write(handlerMsg);
+            fileWriter.write( handlerMsg + "\n");
             fileWriter.flush();
 
             while (!Synchronization.checkSyncronizationVector());  // wait until all routers to be ready.
 
-            sendSignal("ok" + this.ConnectionID);
+            sendSignal("Safe " + this.ConnectionID);
 
-            handlerMsg = "\n\nrouter " + this.ConnectionID + " released from waiting mode.";
+            handlerMsg = "\nSafe massage for router " + this.ConnectionID + " sent.\n";
+            fileWriter.write(handlerMsg);
+            fileWriter.flush();
+
+            handlerMsg = "\nrouter " + this.ConnectionID + " released from waiting mode.\n";
             fileWriter.write(handlerMsg);
             fileWriter.flush();
 

@@ -9,7 +9,11 @@ from router 2 to router 3 cost is: 2
 
 ready signal for router 2 sent to manager.
 
-{ ok2 } received from manager.
+{ Safe 2 } received from manager.
+
+Connecting router 2 to Adjacent routers via UDP.
+router 2 connected to router 0via UDP.
+router 2 connected to router 3via UDP.
 
 		<< Dijkstra algo is applying on router 2 >>
 

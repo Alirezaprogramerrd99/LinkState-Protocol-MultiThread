@@ -1,8 +1,6 @@
 
 import java.io.*;
-import java.net.DatagramSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +24,7 @@ public class Router extends Thread {
     ArrayList<Integer> adjIDs;
     public static int UDPPortCounter = 4005;   // initial value for all routers constructed from this class.
     private final int UDPPort;
-    private final DatagramSocket UDPSocket = null;
+    private final ArrayList<DatagramSocket> UDPSockets;
     private String IPAddress;
     static TopologyInfo netTopology;
     private Map <Integer, Integer> forwardingTable;
@@ -40,6 +38,7 @@ public class Router extends Thread {
         this.adjRouters = new ArrayList<>();
         this.adjIDs = new ArrayList<>();
         this.forwardingTable = new HashMap<>();
+        this.UDPSockets = new ArrayList<>();
 
         //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
@@ -57,6 +56,18 @@ public class Router extends Thread {
                 adjIDs.add(netTopology.getRouters().get(i).getRouterId());
             }
         }
+    }
+
+    private void connectToAdjacentRouters(FileWriter writer) throws IOException {   // this method connects routers using UDP ports.
+
+        String msg = "\nConnecting router "+ this.routerId +" to Adjacent routers via UDP.\n";
+
+        for (EdgeInfo router : adjRouters) {
+            UDPSockets.add(new DatagramSocket(router.getAdjRouter().UDPPort));
+            msg += "router " + this.routerId + " connected to router " + router.getAdjRouter().routerId + "via UDP.\n";
+        }
+        writer.write(msg);
+        writer.flush();
     }
 
     private String showConnectivityTable() {
@@ -125,27 +136,14 @@ public class Router extends Thread {
         EdgeInfo node = adjRouters.get(indexInAdjlist);
         EdgeInfo parNode = adjRouters.get(parIndexInAdjList);
 
-//        if (routerId == 0){
-//            System.out.println("destRouter: " + destRouter);
-//            System.out.println("parents[destRouter]: " + parents[destRouter]);
-//            System.out.println("node weight: " + node.getWeight());
-//        }
-
-        if (parNode.getWeight() > node.getWeight())
-            return true;
-        else
-            return false;
+        return parNode.getWeight() > node.getWeight();
     }
 
     private void updateForwardingTable(Dijkstra dijkstra){
 
         for (int destRouter = 0; destRouter < netTopology.numRouters; destRouter++) {
 
-            if (routerId == 0)
-                System.out.println("in if destRouter is: " + destRouter + "   " + this.adjIDs.contains(destRouter));
-
             if (this.adjIDs.contains(destRouter) && hasMinCost(destRouter, dijkstra.parents)){
-;
                 this.forwardingTable.put(destRouter, destRouter);
             }
 
@@ -153,25 +151,16 @@ public class Router extends Thread {
 
                 int adjID = destRouter;
 
-                if (routerId == 0){
-                    System.out.println("before: " + adjID);
-                    //System.out.println("here!!");
-                }
-
                 adjID = dijkstra.parents[adjID];
 
-                if (routerId == 0){
-                    System.out.println("after: " + adjID);
-                    //System.out.println("here!!");
-                }
+                if (this.routerId == destRouter)
+                    adjID = -1;
 
                 while (!this.adjIDs.contains(adjID)){
 
-                    if (this.routerId == destRouter) {
-
-                        adjID = -1;   // because is the same.
+                    if (this.routerId == destRouter)
                         break;
-                    }
+
                     adjID = dijkstra.parents[adjID];
 
                 }
@@ -293,11 +282,16 @@ public class Router extends Thread {
             Synchronization.pollingWait(input);       // wait until manager orders to continue.
             //-------------------------------------------------------------------------------------------
             msgFromManager = input.readUTF();       // ok from manager
-            writeToRouterFile(fileWriter,"{ "+ msgFromManager+ " } " + "received from manager.\n");
+            writeToRouterFile(fileWriter,"{ "+ msgFromManager+ " } " + "received from manager.\n");   //recv safe massage for router from manager.
+
+            /* send request to other routers.*/
+
+            //connectToAdjacentRouters(fileWriter);
+
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------
 
-            System.out.println("dijkstra algo is applaying on router " + this.routerId);
+            System.out.println("dijkstra algo is applying on router " + this.routerId);
             Dijkstra dijkstra = new Dijkstra(this, this.adjRouters);
             dijkstra.algoDijkstra();    //** apply dijkstra algo to router.
 
