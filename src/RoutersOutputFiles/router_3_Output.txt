@@ -19,29 +19,32 @@ router 3 connected to router 0 via UDP.
 router 3 connected to router 1 via UDP.
 router 3 connected to router 2 via UDP.
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: req 3--dest: 192.0.0.0 } sent to port 4005
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.0 } sent to port 4005
 
-new pkt received for router 3 is { src: router 1--IP-address: 192.0.0.1--payload: req 1--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.3 }
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: ack 3--dest: 192.0.0.0 } sent to port 4005
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Ack3--dest: 192.0.0.0 } sent to port 4005
 
-new pkt received for router 3 is { src: router 0--IP-address: 192.0.0.0--payload: req 0--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 2--IP-address: 192.0.0.2--payload: Req2--dest: 192.0.0.3 }
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: req 3--dest: 192.0.0.1 } sent to port 4006
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 3 is { src: router 2--IP-address: 192.0.0.2--payload: req 2--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.3 }
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: ack 3--dest: 192.0.0.1 } sent to port 4006
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Ack3--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 3 is { src: router 0--IP-address: 192.0.0.0--payload: ack 0--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 1--IP-address: 192.0.0.1--payload: Req1--dest: 192.0.0.3 }
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: req 3--dest: 192.0.0.2 } sent to port 4007
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.2 } sent to port 4007
 
-new pkt received for router 3 is { src: router 1--IP-address: 192.0.0.1--payload: ack 1--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 1--IP-address: 192.0.0.1--payload: Ack1--dest: 192.0.0.3 }
 
-new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: ack 3--dest: 192.0.0.2 } sent to port 4007
+new packet created from router 3 with payload of { src: router 3--IP-address: 192.0.0.3--payload: Ack3--dest: 192.0.0.2 } sent to port 4007
 
-new pkt received for router 3 is { src: router 2--IP-address: 192.0.0.2--payload: ack 2--dest: 192.0.0.3 }
+new pkt received for router 3 is { src: router 2--IP-address: 192.0.0.2--payload: Ack2--dest: 192.0.0.3 }
+
+Ack received from all of adjacent of router 3
+Sending ready for routing signal to manager...
 
 		<< Dijkstra algo is applying on router 3 >>
 

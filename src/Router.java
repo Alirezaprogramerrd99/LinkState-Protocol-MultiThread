@@ -121,7 +121,7 @@ public class Router extends Thread {
 
         for (EdgeInfo node: this.adjRouters) {
 
-            String newReq = encapsulatePacket("req " + this.routerId +"--" +"dest: " + node.getAdjRouter().IPAddress,  true);
+            String newReq = encapsulatePacket("Req" + this.routerId +"--" +"dest: " + node.getAdjRouter().IPAddress,  true);
 
             DatagramPacket packet = createUDPPacket(newReq, node.getAdjRouter().UDPPort);
 
@@ -129,7 +129,7 @@ public class Router extends Thread {
 
             receiveUDPPacket(writer);  // waiting until other req packets receive from adj routers.
 
-            String newAck = encapsulatePacket("ack " + this.routerId + "--"+ "dest: " + node.getAdjRouter().IPAddress,  true);
+            String newAck = encapsulatePacket("Ack" + this.routerId + "--"+ "dest: " + node.getAdjRouter().IPAddress,  true);
 
             DatagramPacket ackPacket = createUDPPacket(newAck, node.getAdjRouter().UDPPort);
             sendUDPPacket(ackPacket, writer);
@@ -356,7 +356,18 @@ public class Router extends Thread {
 
             createUDPSocket(fileWriter);
             connectToAdjacentRouters(fileWriter);
+            System.out.println("router " + this.routerId + " is exchanging control packets with its adjacent routers");
             sendReqToAdjRouters(fileWriter);
+
+            // send ready for routing signal to manager.
+
+            routerMsg = "\n"+"Ack received from all of adjacent of router " + this.routerId + "\n";
+            routerMsg += "Sending ready for routing signal to manager...\n";
+
+            writeToRouterFile(fileWriter, routerMsg);
+
+            sendSignal("router " + this.routerId + " is ready for routing.");
+
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------
 

@@ -132,6 +132,14 @@ public class TCPHandler extends Thread {
             fileWriter.write(handlerMsg);
             fileWriter.flush();
 
+
+            Synchronization.pollingWait(input);   // wait until router says that all if its routres sent ACK...
+
+            msgFromRouter = input.readUTF();
+            fileWriter.write("\nreceived from router "+ +this.ConnectionID + ": " + "{ "  + msgFromRouter + " }" + " \n");
+            fileWriter.flush();
+
+
             while (true);
 
 
