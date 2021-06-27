@@ -398,6 +398,7 @@ public class Router extends Thread {
 
             sendSignal("router " + this.routerId + " is ready for routing.");
 
+            //Synchronization.addDelaySec(2);
             Synchronization.pollingWait(input);    // wait until manager says all the routers are ready.
 
             writeToRouterFile(fileWriter, "\n{ " + input.readUTF() + "} received from manager.\n");
@@ -436,7 +437,7 @@ public class Router extends Thread {
 
             //---- now we can use forwarding table to route data packets.
 
-
+            Synchronization.pollingWait(input);    // wait until manager orders to free this, router.
 
         } catch (IOException e) {
             e.printStackTrace();

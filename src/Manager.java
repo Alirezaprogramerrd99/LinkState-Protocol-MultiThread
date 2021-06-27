@@ -4,10 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Vector;
+import java.util.*;
 
 
 public class Manager {
@@ -19,8 +16,8 @@ public class Manager {
     static int idCounter = 0;
     int port;     // this is TCP port.
     String address;
-
-    //public static final String fileAddress = "D:\\CodeProjects\\JavaProjects\\NetworkProject\\src\\managerOutput.txt";
+    String configFileAddress;
+    String routingPathsFileAddress;
 
     Manager() {
 
@@ -31,11 +28,13 @@ public class Manager {
         this.managerId = idCounter++;
         this.port = 8080;
         this.address = "localhost";
+        this.configFileAddress = "C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\config.txt";
+        this.routingPathsFileAddress = "C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\routingPaths.txt";
     }
 
     public TopologyInfo configNetwork() throws FileNotFoundException {   // must change to non-static.
 
-        File myObj = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\config.txt");
+        File myObj = new File(this.configFileAddress);
 
         //System.out.println(myObj.exists());
         Scanner myReader = new Scanner(myObj);
@@ -93,6 +92,21 @@ public class Manager {
         Router.netTopology = info;
     }
 
+    public void readRoutingPaths() throws IOException{
+
+        File paths = new File(this.routingPathsFileAddress);
+
+        Scanner myReader = new Scanner(paths);
+
+        while (myReader.hasNextLine()) {   // reading topology 's info from file.
+
+            String newPath = myReader.nextLine();
+            String []splitStr = newPath.split(" ");
+
+            TopologyInfo.testPathQueue.add(new PathInfo(Integer.parseInt(splitStr[0]), Integer.parseInt(splitStr[1])));
+        }
+    }
+
     public void startRouter(int id) {
 
         netNodes.get(id).start();
@@ -117,8 +131,8 @@ public class Manager {
                     manager.startRouter(i);   // start router process and wait 2 sec for every process.
 
                     Socket connection = server.accept();
-                    Thread TCPConnection = new TCPHandler(connection, manager.netNodes.get(i).getRouterId());  // pass connection socket between manager and current router to TCP-handler.
-                    manager.handlers.add((TCPHandler) TCPConnection);   // saving list of handlers.
+                    TCPHandler TCPConnection = new TCPHandler(connection, manager.netNodes.get(i).getRouterId());  // pass connection socket between manager and current router to TCP-handler.
+                    manager.handlers.add(TCPConnection);   // saving list of handlers.
                     TCPConnection.start();
 
 
@@ -134,8 +148,18 @@ public class Manager {
             System.err.println("Couldn't start server");
         }
 
+          manager.readRoutingPaths();
 
-        // **** TODO continue of code manager.
+//        System.out.println("main manager blocked.");
+//        while (!Synchronization.checkHandlerManagerVector());   // blocking mode until manager reads whole file.
+////
+//        System.out.println("releasing handlers");
+//        System.out.println("main manager released!!");
+//
+//        for (TCPHandler connection: manager.handlers) {
+//            connection.syncHandlerManger = 1;
+//        }
+
     }
 
 }

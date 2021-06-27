@@ -10,7 +10,7 @@ public class TCPHandler extends Thread {
     static int idCounter = 0;
     static String IPSub = "192.0.0.";
     private String routerAddress;
-
+    int syncHandlerManger;
 
     TCPHandler(Socket connection) {
 
@@ -41,6 +41,7 @@ public class TCPHandler extends Thread {
 
         this.routerAddress = IPSub + (idCounter++);
         //System.out.println("ip for router " + this.ConnectionID + " is: "+ routerAddress);
+        this.syncHandlerManger = 0;
     }
 
     public int getConnectionID() {
@@ -122,7 +123,9 @@ public class TCPHandler extends Thread {
 
             while (!Synchronization.checkSyncronizationVector());  // wait until all routers to be ready.
 
+
             sendSignal("Safe " + this.ConnectionID);
+            Synchronization.addDelaySec(1);
 
             handlerMsg = "\nSafe massage for router " + this.ConnectionID + " sent.\n";
             fileWriter.write(handlerMsg);
@@ -149,10 +152,17 @@ public class TCPHandler extends Thread {
             while (!Synchronization.checkSyncronizationVector());
 
             sendSignal("Network is ready to route.");
+            Synchronization.addDelaySec(1);
 
             fileWriter.write("\nNetwork ready to use routing signal sent to routers.\n");
             fileWriter.flush();
 
+            Synchronization.syncronizationVector[this.ConnectionID] = false;
+
+            //Synchronization.handlerManagerVector[this.ConnectionID] = true;
+
+//            fileWriter.write("TCP handler " + this.ConnectionID + " released by manager.");
+//            fileWriter.flush();
 
             while (true);
 

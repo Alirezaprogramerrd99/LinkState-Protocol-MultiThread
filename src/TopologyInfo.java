@@ -1,4 +1,6 @@
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class TopologyInfo{
 
@@ -6,12 +8,14 @@ public class TopologyInfo{
     final int numRouters;
     String networkInfo;
     int [][] networkTopology;
+    static Queue<PathInfo> testPathQueue;
 
     TopologyInfo(int numRouters, String networkInfo){
 
         this.numRouters = numRouters;
         this.networkInfo = networkInfo;
         this.networkTopology = new int[this.numRouters][this.numRouters];
+        TopologyInfo.testPathQueue = new PriorityQueue<>();
 
         for (int i = 0; i < this.numRouters; i++) {
             for (int j = 0; j < this.numRouters; j++) {
@@ -23,6 +27,7 @@ public class TopologyInfo{
         printTopologyMatrix();
 
         Synchronization.syncronizationVector = new boolean[this.numRouters];
+        Synchronization.handlerManagerVector = new boolean[this.numRouters];
 
         System.out.println();
     }

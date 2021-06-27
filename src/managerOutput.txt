@@ -30,29 +30,29 @@ connectivity table sent to router 3
 { ready3 } signal received from router 3
 
 
-Safe massage for router 1 sent.
-
-Safe massage for router 0 sent.
-
 Safe massage for router 3 sent.
 
 Safe massage for router 2 sent.
-
-router 1 released from waiting mode.
-
-router 0 released from waiting mode.
 
 router 3 released from waiting mode.
 
 router 2 released from waiting mode.
 
-received from router 0: { router 0 is ready for routing. } 
+received from router 3: { router 3 is ready for routing. } 
 
 received from router 2: { router 2 is ready for routing. } 
 
-received from router 1: { router 1 is ready for routing. } 
+Safe massage for router 0 sent.
 
-received from router 3: { router 3 is ready for routing. } 
+router 0 released from waiting mode.
+
+Safe massage for router 1 sent.
+
+router 1 released from waiting mode.
+
+received from router 0: { router 0 is ready for routing. } 
+
+received from router 1: { router 1 is ready for routing. } 
 
 Network ready to use routing signal sent to routers.
 
