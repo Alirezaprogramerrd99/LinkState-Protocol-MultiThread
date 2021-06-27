@@ -1,7 +1,7 @@
-public class PathInfo {
+public class PathInfo implements Comparable<PathInfo>{
 
-    private int src;
-    private int dest;
+    private final int src;
+    private final int dest;
 
     PathInfo(int src, int dest){
 
@@ -15,5 +15,18 @@ public class PathInfo {
 
     public int getDest() {
         return dest;
+    }
+
+    @Override
+    public String toString() {
+        return "PathInfo{" +
+                "src=" + src +
+                ", dest=" + dest +
+                '}';
+    }
+
+    @Override
+    public int compareTo(PathInfo o) {
+        return 0;
     }
 }

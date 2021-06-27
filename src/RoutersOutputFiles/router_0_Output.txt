@@ -21,15 +21,15 @@ router 0 connected to router 3 via UDP.
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: Req1--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Req2--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: Req1--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.2 } sent to port 4007
 
-new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Req2--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Req3--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.2 } sent to port 4007
 
@@ -37,11 +37,11 @@ new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Req0--dest: 192.0.0.3 } sent to port 4008
 
-new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Ack3--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Ack2--dest: 192.0.0.0 }
 
 new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: Ack0--dest: 192.0.0.3 } sent to port 4008
 
-new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: Ack2--dest: 192.0.0.0 }
+new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: Ack3--dest: 192.0.0.0 }
 
 Ack received from all of adjacent of router 0
 Sending ready for routing signal to manager...
@@ -112,3 +112,5 @@ forwarding table for router 0:
 	 1     |     (0, 1)
 	 2     |     (0, 2)
 	 3     |     (0, 1)
+
+from manager: { Command Route0 }

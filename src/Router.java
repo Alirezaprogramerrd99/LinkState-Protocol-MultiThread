@@ -5,8 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-
-public class Router extends Thread {
+public class Router extends Thread implements Comparable<Router> {
 
     private Socket socket = null;
     private final String address;
@@ -26,6 +25,7 @@ public class Router extends Thread {
     private String IPAddress;
     static TopologyInfo netTopology;
     private Map<Integer, Integer> forwardingTable;
+    public List<PathInfo> routerTestPaths;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -36,6 +36,7 @@ public class Router extends Thread {
         this.adjRouters = new ArrayList<>();
         this.adjIDs = new ArrayList<>();
         this.forwardingTable = new HashMap<>();
+        this.routerTestPaths = new ArrayList<>();
 
         //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
@@ -437,7 +438,14 @@ public class Router extends Thread {
 
             //---- now we can use forwarding table to route data packets.
 
-            Synchronization.pollingWait(input);    // wait until manager orders to free this, router.
+            Synchronization.pollingWait(input);    // wait until manager sends router paths.
+
+            writeToRouterFile(fileWriter, "\nfrom manager: " + "{ " + input.readUTF() +" }\n");
+
+            while (!this.routerTestPaths.isEmpty()){   // wait until all of this router packets send to network.
+
+            }
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -447,5 +455,10 @@ public class Router extends Thread {
         while (true) ;    //**** must be fixed wait until data receives from me.
         //closeTCPConnection();  // its to early to close the socket for other threads.
 
+    }
+
+    @Override
+    public int compareTo(Router o) {
+        return 0;
     }
 }

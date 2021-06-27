@@ -88,3 +88,5 @@ forwarding table for router 1:
 	 1     |     (1, -1)
 	 2     |     (1, 3)
 	 3     |     (1, 3)
+
+from manager: { Command Route1 }

@@ -102,7 +102,6 @@ public class Manager {
 
             String newPath = myReader.nextLine();
             String []splitStr = newPath.split(" ");
-
             TopologyInfo.testPathQueue.add(new PathInfo(Integer.parseInt(splitStr[0]), Integer.parseInt(splitStr[1])));
         }
     }
@@ -114,11 +113,11 @@ public class Manager {
 
     public static void main(String[] args) throws IOException {
 
-
         Manager manager = new Manager();
 
         TopologyInfo info = manager.configNetwork();
         manager.createRouters(info);
+        manager.readRoutingPaths();
 
         // ------------------------- handling TCP connection between manager and routers------------------------
         try (ServerSocket server = new ServerSocket(manager.port)) {
@@ -131,7 +130,7 @@ public class Manager {
                     manager.startRouter(i);   // start router process and wait 2 sec for every process.
 
                     Socket connection = server.accept();
-                    TCPHandler TCPConnection = new TCPHandler(connection, manager.netNodes.get(i).getRouterId());  // pass connection socket between manager and current router to TCP-handler.
+                    TCPHandler TCPConnection = new TCPHandler(connection, manager.netNodes.get(i).getRouterId(), manager);  // pass connection socket between manager and current router to TCP-handler.
                     manager.handlers.add(TCPConnection);   // saving list of handlers.
                     TCPConnection.start();
 
@@ -147,8 +146,6 @@ public class Manager {
         } catch (IOException ex) {
             System.err.println("Couldn't start server");
         }
-
-          manager.readRoutingPaths();
 
 //        System.out.println("main manager blocked.");
 //        while (!Synchronization.checkHandlerManagerVector());   // blocking mode until manager reads whole file.

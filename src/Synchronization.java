@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class Synchronization {    // for shared resource.
 
     public static File managerOutput = new File("C:\\Users\\alireza\\Desktop\\NetworkProject\\src\\managerOutput.txt");
-//    public static Semaphore mutex = new Semaphore(1);
+    public static Semaphore mutex = new Semaphore(1);
     public static boolean [] syncronizationVector;
     public static boolean [] handlerManagerVector;
 

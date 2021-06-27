@@ -10,12 +10,16 @@ public class TCPHandler extends Thread {
     static int idCounter = 0;
     static String IPSub = "192.0.0.";
     private String routerAddress;
+    Manager manager;
     int syncHandlerManger;
+    int managerSleepTime;
 
-    TCPHandler(Socket connection) {
+    TCPHandler(Socket connection, Manager manager) {
 
         this.ConnectionID = idCounter++;
         this.connection = connection;
+        this.manager = manager;
+
         try {
             this.input = new DataInputStream(connection.getInputStream());
             this.out = new DataOutputStream(connection.getOutputStream());
@@ -25,10 +29,12 @@ public class TCPHandler extends Thread {
 
     }
 
-    TCPHandler(Socket connection, int routerID) {
+    TCPHandler(Socket connection, int routerID, Manager manager) {
 
         this.ConnectionID = routerID;
         this.connection = connection;
+        this.manager = manager;
+
         try {
 
             this.input = new DataInputStream(connection.getInputStream());
@@ -158,6 +164,27 @@ public class TCPHandler extends Thread {
             fileWriter.flush();
 
             Synchronization.syncronizationVector[this.ConnectionID] = false;
+
+          //  this.managerSleepTime = TopologyInfo.testPathQueue.size();
+
+            while (!TopologyInfo.testPathQueue.isEmpty()) {
+
+                PathInfo newPath = TopologyInfo.testPathQueue.remove();
+
+                System.out.println("in thread " + this.ConnectionID + " newPath src is: " + newPath.getSrc() + " queue size: " + TopologyInfo.testPathQueue.size());
+
+                manager.netNodes.get(newPath.getSrc()).routerTestPaths.add(newPath);
+                Synchronization.addDelaySec(1);
+
+            }
+
+//            System.out.println("out thread " + this.ConnectionID);
+
+            fileWriter.write("\nTest routes sent to router " + this.ConnectionID + "\n");
+            fileWriter.flush();
+
+            sendSignal("Command Route" + this.ConnectionID);
+            Synchronization.addDelaySec(1);
 
             //Synchronization.handlerManagerVector[this.ConnectionID] = true;
 
