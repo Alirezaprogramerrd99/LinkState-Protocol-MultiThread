@@ -17,4 +17,35 @@ Connecting router 2 to Adjacent routers via UDP.
 router 2 connected to router 0 via UDP.
 router 2 connected to router 3 via UDP.
 
-new packet from router 2 with payload of { router 2--IP: 192.0.0.2--path taken: kk payload: req 0 } sent to port 4005
+new packet created from router 2 with payload of { src: router 2--IP-address: 192.0.0.2--payload: req 2--dest: 192.0.0.0 } sent to port 4005
+
+new pkt received for router 2 is { src: router 0--IP-address: 192.0.0.0--payload: req 0--dest: 192.0.0.2 }
+
+new packet created from router 2 with payload of { src: router 2--IP-address: 192.0.0.2--payload: ack 2--dest: 192.0.0.0 } sent to port 4005
+
+new packet created from router 2 with payload of { src: router 2--IP-address: 192.0.0.2--payload: req 2--dest: 192.0.0.3 } sent to port 4008
+
+new pkt received for router 2 is { src: router 0--IP-address: 192.0.0.0--payload: ack 0--dest: 192.0.0.2 }
+
+new packet created from router 2 with payload of { src: router 2--IP-address: 192.0.0.2--payload: ack 2--dest: 192.0.0.3 } sent to port 4008
+
+		<< Dijkstra algo is applying on router 2 >>
+
+SPT for router 2:
+src 2 to router 0 cost is: 3
+src 2 to router 1 cost is: 3
+src 2 to router 2 cost is: 0
+src 2 to router 3 cost is: 2
+
+predecessor paths in router 2: 
+parent of router 0 is 2
+parent of router 1 is 3
+parent of router 2 is 0
+parent of router 3 is 2
+
+forwarding table for router 2:
+----dist--------link-----
+	 0     |     (2, 0)
+	 1     |     (2, 3)
+	 2     |     (2, -1)
+	 3     |     (2, 3)

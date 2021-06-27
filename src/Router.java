@@ -73,8 +73,15 @@ public class Router extends Thread {
         this.UDPSocket = new DatagramSocket(this.UDPPort);
     }
 
-    private String encapsulatePacket(String payload){
-        return "router " + this.routerId + "--" + "IP: " + this.IPAddress + "--" + "path taken: kk " + "payload: " + payload;
+    private String encapsulatePacket(String payload, boolean isControllPkt){
+
+        String[] splitStr = payload.split("--");   // spliting dest and payload of packet.
+
+        if (isControllPkt)
+            return "src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress
+                    + "--" + "payload: " + splitStr[0] + "--"+ splitStr[1];
+
+        else return "";   //** TODO
     }
 
     private DatagramPacket createUDPPacket(String payload, int UDPPort) throws IOException{
@@ -87,7 +94,7 @@ public class Router extends Thread {
 
         String pktData = new String(packet.getData(), StandardCharsets.UTF_8);
 
-        writer.write("\nnew packet from router " + this.routerId + " with payload of " + "{ " + pktData
+        writer.write("\nnew packet created from router " + this.routerId + " with payload of " + "{ " + pktData
                 +" }" +" sent to port " + packet.getPort() + "\n");
 
         writer.flush();
@@ -96,9 +103,7 @@ public class Router extends Thread {
 
     private void receiveUDPPacket(FileWriter writer) throws IOException{
 
-        String msg;
         byte [] recvBuffer = new byte[400];
-
 
         DatagramPacket DpReceive = new DatagramPacket(recvBuffer, recvBuffer.length);
         this.UDPSocket.receive(DpReceive);
@@ -110,20 +115,28 @@ public class Router extends Thread {
         writer.flush();
     }
 
-    // we must write function that sends special req packets to routers.
+    // we must write function that sends special req packets to adj routers.
 
-    public static StringBuilder pktData(byte[] a)
-    {
-        if (a == null)
-            return null;
-        StringBuilder ret = new StringBuilder();
-        int i = 0;
-        while (a[i] != 0)
-        {
-            ret.append((char) a[i]);
-            i++;
+    private void sendReqToAdjRouters(FileWriter writer) throws IOException{
+
+        for (EdgeInfo node: this.adjRouters) {
+
+            String newReq = encapsulatePacket("req " + this.routerId +"--" +"dest: " + node.getAdjRouter().IPAddress,  true);
+
+            DatagramPacket packet = createUDPPacket(newReq, node.getAdjRouter().UDPPort);
+
+            sendUDPPacket(packet, writer);
+
+            receiveUDPPacket(writer);  // waiting until other req packets receive from adj routers.
+
+            String newAck = encapsulatePacket("ack " + this.routerId + "--"+ "dest: " + node.getAdjRouter().IPAddress,  true);
+
+            DatagramPacket ackPacket = createUDPPacket(newAck, node.getAdjRouter().UDPPort);
+            sendUDPPacket(ackPacket, writer);
+
+            receiveUDPPacket(writer);   // wating for ack.
+
         }
-        return ret;
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -343,19 +356,7 @@ public class Router extends Thread {
 
             createUDPSocket(fileWriter);
             connectToAdjacentRouters(fileWriter);
-            String newPkt = encapsulatePacket("req 0");
-
-            int udp;
-            if (this.routerId == 0)
-                udp = 4006;
-            else
-                udp = 4005;
-            DatagramPacket packet = createUDPPacket(newPkt, udp);
-
-            sendUDPPacket(packet, fileWriter);
-
-            receiveUDPPacket(fileWriter);
-
+            sendReqToAdjRouters(fileWriter);
 
             // ---------------------- applaying the dijkstra on router ----------------------------------------
 

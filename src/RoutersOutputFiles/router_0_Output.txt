@@ -19,9 +19,29 @@ router 0 connected to router 1 via UDP.
 router 0 connected to router 2 via UDP.
 router 0 connected to router 3 via UDP.
 
-new packet from router 0 with payload of { router 0--IP: 192.0.0.0--path taken: kk payload: req 0 } sent to port 4006
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: req 0--dest: 192.0.0.1 } sent to port 4006
 
-new pkt received for router 0 is { router 1--IP: 192.0.0.1--path taken: kk payload: req 0 }
+new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: req 1--dest: 192.0.0.0 }
+
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: ack 0--dest: 192.0.0.1 } sent to port 4006
+
+new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: req 2--dest: 192.0.0.0 }
+
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: req 0--dest: 192.0.0.2 } sent to port 4007
+
+new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: req 3--dest: 192.0.0.0 }
+
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: ack 0--dest: 192.0.0.2 } sent to port 4007
+
+new pkt received for router 0 is { src: router 1--IP-address: 192.0.0.1--payload: ack 1--dest: 192.0.0.0 }
+
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: req 0--dest: 192.0.0.3 } sent to port 4008
+
+new pkt received for router 0 is { src: router 2--IP-address: 192.0.0.2--payload: ack 2--dest: 192.0.0.0 }
+
+new packet created from router 0 with payload of { src: router 0--IP-address: 192.0.0.0--payload: ack 0--dest: 192.0.0.3 } sent to port 4008
+
+new pkt received for router 0 is { src: router 3--IP-address: 192.0.0.3--payload: ack 3--dest: 192.0.0.0 }
 
 		<< Dijkstra algo is applying on router 0 >>
 
