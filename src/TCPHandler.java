@@ -13,6 +13,7 @@ public class TCPHandler extends Thread {
     static Manager manager;
     int syncHandlerManger;
     int managerSleepTime;
+    static int printCounter = 1;
 
     TCPHandler(Socket connection, Manager manager) {
 
@@ -88,8 +89,6 @@ public class TCPHandler extends Thread {
             fileWriter.flush();
 
            //Synchronization.mutex.release();
-
-
 
             System.out.println("TCP connection " + getConnectionID());
 
@@ -185,25 +184,46 @@ public class TCPHandler extends Thread {
             fileWriter.flush();
 
             sendSignal("Command Route" + this.ConnectionID);
-            Synchronization.addDelaySec(1);
+            Synchronization.addDelaySec(1);    // sleep manager after end of file.
 
-            //Synchronization.handlerManagerVector[this.ConnectionID] = true;
+            Synchronization.pollingWait(input);  // wait until routers send their data packets.
 
-//            fileWriter.write("TCP handler " + this.ConnectionID + " released by manager.");
-//            fileWriter.flush();
+            msgFromRouter = input.readUTF();
+            fileWriter.write("\nfrom router " + this.ConnectionID + ": " + "{ " + msgFromRouter +" }");
 
-            while (true);
+            String quitCommnad = "Quit " + manager.netNodes.get(this.ConnectionID).getIPAddress();
+
+            if (msgFromRouter.equals("All data pkts sent by router" + this.ConnectionID)){
+
+                fileWriter.write("\nQuit " + "massage send to " + " router "+ this.ConnectionID +"\n");
+                sendSignal(quitCommnad);
+
+                Synchronization.addDelaySec(1);
+                fileWriter.write("\nRouter " + this.ConnectionID + " has been stopped.\n");
+            }
+
+            Synchronization.addDelaySec(3);
+
+            Synchronization.syncronizationVector[this.ConnectionID] = true;
+
+            while (!Synchronization.checkSyncronizationVector());
+
+            fileWriter.write("\nTCP Handler " + this.ConnectionID + " has been terminated.\n");
+            fileWriter.flush();
+
+            fileWriter.close();
 
         } catch (Exception ex) {
             System.err.println(ex);
 
-
-        } //finally {
+        } finally {
             try {
                 connection.close();
-            } catch (IOException e) {
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        //}
+        }
     }
 
 }

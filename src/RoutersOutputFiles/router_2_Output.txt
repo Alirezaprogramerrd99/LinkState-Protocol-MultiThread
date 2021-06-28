@@ -94,5 +94,11 @@ from manager: { Command Route2 }
 Test paths that router 2 must sent data packets:
 PathInfo{src=2, dest=3}
 
-new packet created from router 2 with payload of { Data packet--src: router 2--IP-address: 192.0.0.2--payload: data packet--dest: 192.0.0.3
+new packet created from router 2 with payload of { Data packet--src: router 2--IP-address: 192.0.0.2--payload: data packet--dest: 192.0.0.3  nextHop: 192.0.0.3
  } sent to port 4008
+
+Router 2 has sent all of its data packets.
+
+{ Quit 192.0.0.2 } sent by manager.
+
+Router 2 has been Stoped by manager.

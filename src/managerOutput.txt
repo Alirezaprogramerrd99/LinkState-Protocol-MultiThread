@@ -30,27 +30,27 @@ connectivity table sent to router 3
 { ready3 } signal received from router 3
 
 
-Safe massage for router 2 sent.
-
 Safe massage for router 0 sent.
-
-Safe massage for router 1 sent.
-
-router 2 released from waiting mode.
-
-router 0 released from waiting mode.
-
-router 1 released from waiting mode.
-
-received from router 1: { router 1 is ready for routing. } 
-
-received from router 0: { router 0 is ready for routing. } 
-
-received from router 2: { router 2 is ready for routing. } 
 
 Safe massage for router 3 sent.
 
+Safe massage for router 2 sent.
+
+router 2 released from waiting mode.
+
+Safe massage for router 1 sent.
+
+router 0 released from waiting mode.
+
 router 3 released from waiting mode.
+
+router 1 released from waiting mode.
+
+received from router 2: { router 2 is ready for routing. } 
+
+received from router 0: { router 0 is ready for routing. } 
+
+received from router 1: { router 1 is ready for routing. } 
 
 received from router 3: { router 3 is ready for routing. } 
 
@@ -62,10 +62,38 @@ Network ready to use routing signal sent to routers.
 
 Network ready to use routing signal sent to routers.
 
-Test routes sent to router 3
-
 Test routes sent to router 0
+
+Test routes sent to router 2
 
 Test routes sent to router 1
 
-Test routes sent to router 2
+Test routes sent to router 3
+
+from router 3: { All data pkts sent by router3 }
+Quit massage send to  router 3
+
+Router 3 has been stopped.
+
+TCP Handler 3 has been terminated.
+
+from router 2: { All data pkts sent by router2 }
+Quit massage send to  router 2
+
+Router 2 has been stopped.
+
+TCP Handler 2 has been terminated.
+
+from router 0: { All data pkts sent by router0 }
+Quit massage send to  router 0
+
+Router 0 has been stopped.
+
+TCP Handler 0 has been terminated.
+
+from router 1: { All data pkts sent by router1 }
+Quit massage send to  router 1
+
+Router 1 has been stopped.
+
+TCP Handler 1 has been terminated.

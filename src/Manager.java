@@ -146,15 +146,6 @@ public class Manager {
             System.err.println("Couldn't start server");
         }
 
-//        System.out.println("main manager blocked.");
-//        while (!Synchronization.checkHandlerManagerVector());   // blocking mode until manager reads whole file.
-////
-//        System.out.println("releasing handlers");
-//        System.out.println("main manager released!!");
-//
-//        for (TCPHandler connection: manager.handlers) {
-//            connection.syncHandlerManger = 1;
-//        }
 
     }
 

@@ -170,7 +170,6 @@ public class Router extends Thread implements Comparable<Router> {
 
             receiveUDPPacket(writer);   // waiting for ack from adj routers...
 
-
         }
     }
 
@@ -190,7 +189,7 @@ public class Router extends Thread implements Comparable<Router> {
 
     private void sendDataPacket(FileWriter writer, String payload, Router nextRouter) throws IOException {
 
-        String newDataPkt = encapsulatePacket(payload + "--nextHop: " + nextRouter.IPAddress + "--path:", false, false);
+        String newDataPkt = encapsulatePacket(payload + "  nextHop: " + nextRouter.IPAddress, false, false);
         DatagramPacket packet = createUDPPacket(newDataPkt, nextRouter.getUDPPort());
         sendUDPPacket(packet, writer);
     }
@@ -318,6 +317,10 @@ public class Router extends Thread implements Comparable<Router> {
 
     public int getRouterId() {
         return routerId;
+    }
+
+    public String getIPAddress() {
+        return IPAddress;
     }
 
     @Override
@@ -487,26 +490,38 @@ public class Router extends Thread implements Comparable<Router> {
 
                 sendDataPacket(fileWriter, payload, nextRouter);
 
-                //receiveUDPPacket(fileWriter);
-//                this.receiveUDPDataPacket(fileWriter);
+//                if (!destRouterPaths.isEmpty()) {
+//
+//                    destRouterPaths.remove(0);
+//                    receiveUDPPacket(fileWriter);
+//                }
+               // receiveUDPPacket(fileWriter);
             }
 
-            while (!this.destRouterPaths.isEmpty()) {
+              writeToRouterFile(fileWriter, "\nRouter " + this.routerId + " has sent all of its data packets.\n");
 
-                destRouterPaths.remove(0);
-                receiveUDPPacket(fileWriter);
-            }
-            //System.out.println("end!! " + this.routerId );
+              sendSignal("All data pkts sent by router" + this.routerId);
 
+              Synchronization.pollingWait(input);      // wait until manager sends Quit msg to this router.
+
+              String handlerCommand = input.readUTF();
+
+              writeToRouterFile(fileWriter, "\n{ " + handlerCommand + " }" + " sent by manager.\n");
+
+              if (handlerCommand.equals("Quit " + this.IPAddress)){
+
+                  closeTCPConnection();
+                  writeToRouterFile(fileWriter,"\nRouter " + this.routerId + " has been Stoped by manager.\n");
+              }
+
+              fileWriter.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         // close the connection
-        while (true) ;    //**** must be fixed wait until data receives from me.
+        //  while (true) ;    //**** must be fixed wait until data receives from me.
         //closeTCPConnection();  // its to early to close the socket for other threads.
-
     }
 
     @Override
