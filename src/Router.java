@@ -25,7 +25,8 @@ public class Router extends Thread implements Comparable<Router> {
     private String IPAddress;
     static TopologyInfo netTopology;
     private Map<Integer, Integer> forwardingTable;
-    public List<PathInfo> routerTestPaths;
+    public List<PathInfo> srcRouterTestPaths;
+    public List<PathInfo> destRouterPaths;
 
     Router(String address, int TCPPort, int routerId) {
 
@@ -36,7 +37,8 @@ public class Router extends Thread implements Comparable<Router> {
         this.adjRouters = new ArrayList<>();
         this.adjIDs = new ArrayList<>();
         this.forwardingTable = new HashMap<>();
-        this.routerTestPaths = new ArrayList<>();
+        this.srcRouterTestPaths = new ArrayList<>();
+        this.destRouterPaths = new ArrayList<>();
 
         //*** -------------- router output files configurations ------------------------
         this.routerFileName = "router_" + routerId + "_Output.txt";
@@ -79,7 +81,7 @@ public class Router extends Thread implements Comparable<Router> {
         String[] splitStr = payload.split("--");   // spliting dest and payload of packet.
 
         if (isControllPkt)
-            return "src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress
+            return "Control packet--src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress
                     + "--" + "payload: " + splitStr[0] + "--" + splitStr[1];
 
         else {
@@ -88,14 +90,15 @@ public class Router extends Thread implements Comparable<Router> {
                 String newLSPPacket = "LSP packet--src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress + "--adjacent routers info: \n[ ";
 
                 for (EdgeInfo node : adjRouters) {
-                    newLSPPacket += "to router " + node.getAdjRouter().routerId + " with IP-address: "+ node.getAdjRouter().IPAddress + " cost is: " + node.getWeight();
+                    newLSPPacket += "to router " + node.getAdjRouter().routerId + " with IP-address: " + node.getAdjRouter().IPAddress + " cost is: " + node.getWeight();
                     newLSPPacket += "\n";
                 }
-                newLSPPacket += "] "+ "--payload: "+ splitStr[0] + "--" +splitStr[1] +"\n";
+                newLSPPacket += "] " + "--payload: " + splitStr[0] + "--" + splitStr[1] + "\n";
 
                 return newLSPPacket;
-            } else {    //*** TODO for data packets...
-                return "";
+            } else {
+                return "Data packet--src: router " + this.routerId + "--" + "IP-address: " + this.IPAddress + "--" + "payload: " + splitStr[0]
+                        + "--dest: " + splitStr[1] + "\n";
 
             }
         }
@@ -130,6 +133,19 @@ public class Router extends Thread implements Comparable<Router> {
 
         writer.write("\nnew pkt received for router " + this.routerId + " is " + "{ " + pktRecv + " }" + "\n");
         writer.flush();
+    }
+
+    private String[] receiveUDPDataPacket() throws IOException {
+
+        byte[] recvBuffer = new byte[1000];
+
+        DatagramPacket DpReceive = new DatagramPacket(recvBuffer, recvBuffer.length);
+        this.UDPSocket.receive(DpReceive);
+
+        String pktRecv = new String(recvBuffer, StandardCharsets.UTF_8);
+        pktRecv = pktRecv.replace("\0", "");
+
+        return pktRecv.split("--");
     }
 
     // we must write function that sends special req packets to adj routers.
@@ -170,6 +186,22 @@ public class Router extends Thread implements Comparable<Router> {
 
             receiveUDPPacket(writer);  // waiting until other LSP packets receive from adj routers.
         }
+    }
+
+    private void sendDataPacket(FileWriter writer, String payload, Router nextRouter) throws IOException {
+
+        String newDataPkt = encapsulatePacket(payload + "--nextHop: " + nextRouter.IPAddress + "--path:", false, false);
+        DatagramPacket packet = createUDPPacket(newDataPkt, nextRouter.getUDPPort());
+        sendUDPPacket(packet, writer);
+    }
+
+    private void printRoutesForRouter(FileWriter writer) throws IOException {
+
+        writer.write("\nTest paths that router " + this.routerId + " must sent data packets:\n");
+        for (PathInfo path : this.srcRouterTestPaths) {
+            writer.write(path.toString() + "\n");
+        }
+        writer.flush();
     }
 
     //----------------------------------------------------------------------------------------------------------
@@ -440,13 +472,31 @@ public class Router extends Thread implements Comparable<Router> {
 
             Synchronization.pollingWait(input);    // wait until manager sends router paths.
 
-            writeToRouterFile(fileWriter, "\nfrom manager: " + "{ " + input.readUTF() +" }\n");
+            writeToRouterFile(fileWriter, "\nfrom manager: " + "{ " + input.readUTF() + " }\n");
 
             // threads that have empty routerTestPaths will pass this loop.
-            while (!this.routerTestPaths.isEmpty()){   // wait until all of this router packets send to network.
-                System.out.println("router " + this.routerId);
-                Synchronization.addDelaySec(1);
+
+            printRoutesForRouter(fileWriter);
+
+            while (!this.srcRouterTestPaths.isEmpty()) {   // wait until all of this router packets send to network.
+
+                PathInfo newPath = srcRouterTestPaths.remove(0);
+                int nextNode = this.forwardingTable.get(newPath.getDest());
+                Router nextRouter = this.adjRouters.get(adjIDs.indexOf(nextNode)).getAdjRouter();
+                String payload = "data packet--" + TCPHandler.manager.netNodes.get(newPath.getDest()).IPAddress;
+
+                sendDataPacket(fileWriter, payload, nextRouter);
+
+                //receiveUDPPacket(fileWriter);
+//                this.receiveUDPDataPacket(fileWriter);
             }
+
+            while (!this.destRouterPaths.isEmpty()) {
+
+                destRouterPaths.remove(0);
+                receiveUDPPacket(fileWriter);
+            }
+            //System.out.println("end!! " + this.routerId );
 
 
         } catch (IOException e) {

@@ -10,7 +10,7 @@ public class TCPHandler extends Thread {
     static int idCounter = 0;
     static String IPSub = "192.0.0.";
     private String routerAddress;
-    Manager manager;
+    static Manager manager;
     int syncHandlerManger;
     int managerSleepTime;
 
@@ -18,7 +18,7 @@ public class TCPHandler extends Thread {
 
         this.ConnectionID = idCounter++;
         this.connection = connection;
-        this.manager = manager;
+        TCPHandler.manager = manager;
 
         try {
             this.input = new DataInputStream(connection.getInputStream());
@@ -33,7 +33,7 @@ public class TCPHandler extends Thread {
 
         this.ConnectionID = routerID;
         this.connection = connection;
-        this.manager = manager;
+        TCPHandler.manager = manager;
 
         try {
 
@@ -174,7 +174,8 @@ public class TCPHandler extends Thread {
                 PathInfo newPath = TopologyInfo.testPathQueue.remove();
 
                 //System.out.println("in thread " + this.ConnectionID + " newPath src is: " + newPath.getSrc() + " queue size: " + TopologyInfo.testPathQueue.size());
-                manager.netNodes.get(newPath.getSrc()).routerTestPaths.add(newPath);
+                manager.netNodes.get(newPath.getSrc()).srcRouterTestPaths.add(newPath);
+                manager.netNodes.get(newPath.getDest()).destRouterPaths.add(newPath);
                 Synchronization.addDelaySec(1);
             }
 
